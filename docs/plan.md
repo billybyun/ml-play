@@ -32,12 +32,15 @@ foundations/tiny-clip/
   configs/
     flickr8k.yaml
     flickr30k.yaml
+  requirements.txt
   notebooks/
     sanity_checks.ipynb
   demos/
     gradio_retrieval.py
   README.md
 ```
+
+**Requirements:** Add `requirements.txt` in this folder with: `torch`, `transformers`, `datasets`, `Pillow`, `pyyaml`, and optionally `timm` (for Track B). Ensures reproducible env for tiny-clip.
 
 ---
 
@@ -51,6 +54,11 @@ foundations/tiny-clip/
 **Optional:** Flickr8k (~8k images) for faster iteration or debugging.
 
 - Keep dataset choice configurable in `configs/*.yaml`.
+
+**Data pipeline:** Use a thin **Dataset class** (or wrapper) that:
+- For HF: wraps `load_dataset("nlphuji/flickr30k")` (or dataset name from config); applies CLIP processor (Track A) or image transforms + tokenizer (Track B); returns `(pixel_values, input_ids, attention_mask)` or equivalent for the chosen model.
+- Optionally supports a local dataset path from config (e.g. manual download) for the same interface.
+- Single place for transforms/tokenization; easy to plug into `DataLoader` and to add augmentation later.
 
 ---
 
@@ -74,6 +82,39 @@ For both tracks:
 - **Steps:** Load CLIP model + processor; run retrieval on Flickr30k; compute R@1/5/10 both directions.
 - **Expected:** Strong zero-shot performance (not random).
 - **Deliverables:** e.g. `eval_clip_zeroshot.py`, baseline metrics in README, qualitative examples.
+
+#### Implementation steps for Stage A0
+
+Do in order so each step can be checked and committed.
+
+1. **Placement**  
+   Create `foundations/tiny-clip/` and subdirs only: `src/`, `configs/`, `notebooks/`, `demos/`. No code yet. Commit.
+
+2. **Scaffold**  
+   - Add minimal files: `src/data.py`, `models.py`, `loss.py`, `train.py`, `eval_retrieval.py`, `utils.py` (stubs or minimal docstrings; `train.py` and `loss.py` not used in A0).  
+   - Add `configs/flickr30k.yaml` (and optionally `flickr8k.yaml`) with keys: `dataset_name` (e.g. `nlphuji/flickr30k`), `split` (e.g. `test` or `val`), `batch_size`, and any paths if supporting local data.  
+   - Add `foundations/tiny-clip/requirements.txt`: `torch`, `transformers`, `datasets`, `Pillow`, `pyyaml`.  
+   Commit.
+
+3. **Data**  
+   - In `src/data.py`, implement a Dataset that loads Flickr30k via `datasets.load_dataset(...)` (dataset name from config), applies `CLIPProcessor` (image + text), and returns batches compatible with CLIP (e.g. `pixel_values`, `input_ids`, `attention_mask`).  
+   - Add a small helper to build the DataLoader from config.  
+   Commit.
+
+4. **Eval script**  
+   - Add `eval_retrieval.py` (or `eval_clip_zeroshot.py`) in `src/` or as a script under `foundations/tiny-clip/`: load config → load `CLIPModel` and `CLIPProcessor` from `openai/clip-vit-base-patch32` → load eval split via your Dataset/DataLoader → compute image and text embeddings → similarity matrix → R@1, R@5, R@10 for text→image and image→text.  
+   - Optionally save a few qualitative examples (top-k retrievals).  
+   Commit.
+
+5. **Run Stage A0**  
+   - Run the eval script (no training). Record baseline metrics (e.g. in a small table or JSON).  
+   - Confirm numbers are strong (not random), so the pipeline is correct.
+
+6. **README**  
+   - In `foundations/tiny-clip/README.md`: how to install deps (`pip install -r requirements.txt`), how to run the zero-shot eval (e.g. `python eval_retrieval.py --config configs/flickr30k.yaml`), what the config keys mean, and where to paste the baseline metrics.  
+   Commit.
+
+After this, Stage A0 is done. A1 will add resetting projections and training.
 
 ### Stage A1 — Reset and retrain projection heads only
 
