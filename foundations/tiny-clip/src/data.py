@@ -10,11 +10,13 @@ class Flickr30kCLIPDataset(Dataset):
     Flickr30k with CLIP preprocessing. One item per image; each image has 5 captions.
     Returns pixel_values (from CLIPProcessor) and tokenized captions (input_ids, attention_mask)
     for the 5 captions, so batch shapes are (B, C, H, W) and (B, 5, L).
+    Uses parquet revision to avoid "dataset scripts are no longer supported" (HF deprecation).
     """
-    def __init__(self, dataset_name: str, split: str, processor, max_length: int = 77):
+    def __init__(self, dataset_name: str, split: str, processor, max_length: int = 77, revision: str | None = "refs/convert/parquet"):
         self.processor = processor
         self.max_length = max_length
-        self.hf_ds = load_dataset(dataset_name, split=split)
+        # Load from parquet conversion to avoid legacy script (HF deprecated dataset .py scripts)
+        self.hf_ds = load_dataset(dataset_name, split=split, revision=revision)
         # nlphuji/flickr30k: each row has "image" (PIL) and "caption" (list of 5 strings)
         self._check_columns()
 
@@ -58,7 +60,8 @@ def get_dataloader(config: dict, processor, split: str | None = None, shuffle: b
     dataset_name = config["dataset_name"]
     split = split or config.get("split", "test")
     batch_size = config.get("batch_size", 32)
-    dataset = Flickr30kCLIPDataset(dataset_name, split, processor)
+    revision = config.get("revision", "refs/convert/parquet")
+    dataset = Flickr30kCLIPDataset(dataset_name, split, processor, revision=revision)
     return DataLoader(
         dataset,
         batch_size=batch_size,

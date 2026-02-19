@@ -2,6 +2,8 @@
 dataset_name: "nlphuji/flickr30k"
 split: "test"  # or "val" for validation
 batch_size: 32
+# Parquet revision avoids "dataset scripts are no longer supported" (HF deprecation)
+revision: "refs/convert/parquet"
 
 # Optional: local root if using manual download instead of HF
 # data_root: null
