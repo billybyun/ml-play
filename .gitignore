@@ -1,3 +1,50 @@
+# ---- Python ----
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
 
+# ---- Environments ----
+.venv/
+venv/
+env/
+.conda/
+conda/
+
+# ---- Packaging ----
+build/
+dist/
+*.egg-info/
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+
+# ---- Editors / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- Logs & temp ----
+*.log
+*.tmp
+*.swp
+
+# ---- Testing / coverage ----
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ---- ML / experiment artifacts (common) ----
+runs/
+wandb/
+mlruns/
+lightning_logs/
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+
+# ---- Data (keep data out of git) ----
+data/
+datasets/
