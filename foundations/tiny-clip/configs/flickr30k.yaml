@@ -1,0 +1,7 @@
+# Flickr30k — primary dataset for tiny-clip (Track A / B)
+dataset_name: "nlphuji/flickr30k"
+split: "test"  # or "val" for validation
+batch_size: 32
+
+# Optional: local root if using manual download instead of HF
+# data_root: null

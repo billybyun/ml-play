@@ -1,0 +1,6 @@
+# Flickr8k — optional, smaller dataset for fast iteration
+dataset_name: "nlphuji/flickr8k"  # or HF equivalent if available
+split: "test"
+batch_size: 32
+
+# data_root: null

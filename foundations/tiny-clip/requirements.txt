@@ -1,0 +1,8 @@
+torch
+transformers
+datasets
+Pillow
+pyyaml
+
+# Optional for Track B (build from components):
+# timm
