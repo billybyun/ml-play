@@ -1,6 +1,6 @@
 # tiny-clip
 
-CLIP-style contrastive learning pipeline: modify pretrained CLIP (Track A) or build from components (Track B). See [docs/plan.md](../../docs/plan.md) for the full plan.
+CLIP-style contrastive learning pipeline: modify pretrained CLIP (Track A) or build from components (Track B). See [docs/plans/tiny-clip.md](../../docs/plans/tiny-clip.md) for the full plan.
 
 ## Sample data
 
