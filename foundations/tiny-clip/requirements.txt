@@ -3,6 +3,7 @@ transformers
 datasets
 Pillow
 pyyaml
+matplotlib
 
 # Optional for Track B (build from components):
 # timm

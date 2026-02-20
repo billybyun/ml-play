@@ -111,4 +111,28 @@ if __name__ == "__main__":
     print("pixel_values shape:", batch["pixel_values"].shape)
     print("input_ids shape:", batch["input_ids"].shape)
     print("attention_mask shape:", batch["attention_mask"].shape)
+
+    # Visualize a few raw images with matching captions
+    import matplotlib.pyplot as plt
+    num_show = 3
+    fig, axes = plt.subplots(num_show, 1, figsize=(8, 4 * num_show))
+    if num_show == 1:
+        axes = [axes]
+    for i, ax in enumerate(axes):
+        row = dataset.hf_ds[i]
+        img = row["image"]
+        caps = row["caption"]
+        if not isinstance(caps, list):
+            caps = [caps]
+        caps = (caps * 5)[:5]
+        ax.imshow(img)
+        ax.axis("off")
+        cap_text = "\n".join(f"  {j+1}. {c}" for j, c in enumerate(caps))
+        ax.set_title(f"Sample {i} — captions:\n{cap_text}", fontsize=8, loc="left")
+    plt.tight_layout()
+    out_path = os.path.join(_root, "sanity_check_samples.png")
+    plt.savefig(out_path, dpi=100, bbox_inches="tight")
+    print("Saved visualization to", out_path)
+    plt.close()
+
     print("Sanity check passed.")
