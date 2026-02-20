@@ -64,6 +64,8 @@ foundations/tiny-clip/
 
 ## Evaluation (shared)
 
+**R@K definition:** Recall@K = fraction of queries whose ground-truth match appears in the top K ranked candidates (t2i: correct image; i2t: any of the image’s ground-truth captions).
+
 For both tracks:
 
 - **Text → Image:** rank images by similarity to each caption → Recall@1, @5, @10
@@ -93,6 +95,9 @@ Given an image, rank **all candidate captions in the eval split** by similarity 
 For Flickr30k test split:
 - pool for t2i = #images in split
 - pool for i2t = #captions in split (= 5 × #images)
+
+**Eval protocol note:** Report which Flickr30k split and pool you use (e.g., official test split; full-pool ranking over all images/captions in that split). Results depend on pool size (e.g., 1k vs full split), so always log split name and counts.
+
 
 Do NOT report metrics computed only within a minibatch.
 
@@ -143,6 +148,16 @@ Do in order so each step can be checked and committed.
    - Run pretrained CLIP on 1–3 **images the model has never seen** (e.g. profile picture, other sharable personal photos). No training or fine-tuning on these images.
    - For each image: show **top-k retrieved captions** (from the eval set) or similarity to a few hand-written captions. Save figure(s).
    - Add a **Results** or **Demo** section in `foundations/tiny-clip/README.md` that includes these examples (image + retrieved captions). Use only images you are comfortable sharing in the repo.
+
+   6b. **Optional personal mini-retrieval demo (with self-written ground truth)**
+   - Add 1–10 personal photos (only if comfortable sharing; otherwise keep local only).
+   - For each photo, write 1–3 captions (self-authored ground truth).
+   - Build a small eval pool: personal photos + N Flickr distractor images, and personal captions + M Flickr distractor captions.
+   - Run both:
+     - t2i: each personal caption should retrieve its paired personal photo in top-K
+     - i2t: each personal photo should retrieve its caption(s) in top-K
+   - Label this section clearly as **qualitative / mini-demo**, not an official benchmark.
+
 
 7. **README**
    - In `foundations/tiny-clip/README.md`: how to install deps (`pip install -r requirements.txt`), how to run the zero-shot eval (e.g. `python eval_retrieval.py --config configs/flickr30k.yaml`), what the config keys mean, and where to paste the baseline metrics.
