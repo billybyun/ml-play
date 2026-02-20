@@ -48,6 +48,3 @@ checkpoints/
 # ---- Data (keep data out of git) ----
 data/
 datasets/
-
-# ---- tiny-clip generated ----
-foundations/tiny-clip/sanity_check_samples.png
