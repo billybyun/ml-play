@@ -96,7 +96,9 @@ For Flickr30k test split:
 - pool for t2i = #images in split
 - pool for i2t = #captions in split (= 5 × #images)
 
-**Eval protocol note:** Report which Flickr30k split and pool you use (e.g., official test split; full-pool ranking over all images/captions in that split). Results depend on pool size (e.g., 1k vs full split), so always log split name and counts.
+**Standard benchmark:** Retrieval evaluation uses the **Flickr30k 1k test set** (same as in papers: 1,000 images, 5 captions each). Config: `eval_dataset_name: "nlphuji/flickr_1k_test_image_text_retrieval"`, `eval_split: "test"`. Use `get_dataloader(..., for_eval=True)` so the eval script loads this 1k set.
+
+**Eval protocol note:** Report which split and pool you use; always log split name and counts (e.g. 1k test, full-pool ranking).
 
 
 Do NOT report metrics computed only within a minibatch.
@@ -136,7 +138,7 @@ Do in order so each step can be checked and committed.
    Commit.
 
 4. **Eval script**
-   - Add `eval_retrieval.py` (or `eval_clip_zeroshot.py`) in `src/` or as a script under `foundations/tiny-clip/`: load config → load `CLIPModel` and `CLIPProcessor` from `openai/clip-vit-base-patch32` → load eval split via your Dataset/DataLoader → compute image and text embeddings → similarity matrix → R@1, R@5, R@10 for text→image and image→text.
+   - Add `eval_retrieval.py` (or `eval_clip_zeroshot.py`) in `src/` or as a script under `foundations/tiny-clip/`: load config → load `CLIPModel` and `CLIPProcessor` from `openai/clip-vit-base-patch32` → load eval data via `get_dataloader(config, processor, for_eval=True)` (standard 1k test set) → compute image and text embeddings → similarity matrix → R@1, R@5, R@10 for text→image and image→text.
    - Optionally save a few qualitative examples (top-k retrievals).
    Commit.
 

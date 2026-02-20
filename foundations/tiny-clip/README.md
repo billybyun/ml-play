@@ -28,7 +28,7 @@ Output: dataset size, batch tensor shapes, and `Saved visualization to .../sanit
 
 ## Config
 
-- **configs/flickr30k.yaml** — dataset name, split, batch size, revision (Parquet).
+- **configs/flickr30k.yaml** — dataset name, split, batch size, revision (Parquet). Retrieval evaluation uses the **standard 1k test set** (`eval_dataset_name: nlphuji/flickr_1k_test_image_text_retrieval`) so numbers are comparable to papers.
 - **configs/flickr8k.yaml** — optional smaller dataset.
 
 ## Next

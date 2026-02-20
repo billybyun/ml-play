@@ -15,8 +15,11 @@ class Flickr30kCLIPDataset(Dataset):
     def __init__(self, dataset_name: str, split: str, processor, max_length: int = 77, revision: str | None = "refs/convert/parquet"):
         self.processor = processor
         self.max_length = max_length
-        # Load from parquet conversion to avoid legacy script (HF deprecated dataset .py scripts)
-        self.hf_ds = load_dataset(dataset_name, split=split, revision=revision)
+        # Load; revision avoids "dataset scripts are no longer supported" when set (e.g. parquet)
+        if revision is not None:
+            self.hf_ds = load_dataset(dataset_name, split=split, revision=revision)
+        else:
+            self.hf_ds = load_dataset(dataset_name, split=split)
         # nlphuji/flickr30k: each row has "image" (PIL) and "caption" (list of 5 strings)
         self._check_columns()
 
@@ -55,12 +58,19 @@ class Flickr30kCLIPDataset(Dataset):
         }
 
 
-def get_dataloader(config: dict, processor, split: str | None = None, shuffle: bool = False) -> DataLoader:
-    """Build a DataLoader from config and CLIP processor."""
-    dataset_name = config["dataset_name"]
-    split = split or config.get("split", "test")
+def get_dataloader(config: dict, processor, split: str | None = None, shuffle: bool = False, for_eval: bool = False) -> DataLoader:
+    """Build a DataLoader from config and CLIP processor.
+    If for_eval=True and config has eval_dataset_name, use the standard 1k test set for retrieval benchmark.
+    """
     batch_size = config.get("batch_size", 32)
-    revision = config.get("revision", "refs/convert/parquet")
+    if for_eval and config.get("eval_dataset_name"):
+        dataset_name = config["eval_dataset_name"]
+        split = split or config.get("eval_split", "test")
+        revision = config.get("eval_revision")
+    else:
+        dataset_name = config["dataset_name"]
+        split = split or config.get("split", "test")
+        revision = config.get("revision", "refs/convert/parquet")
     dataset = Flickr30kCLIPDataset(dataset_name, split, processor, revision=revision)
     return DataLoader(
         dataset,
