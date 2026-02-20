@@ -41,10 +41,4 @@ python -m src.eval_retrieval --config configs/flickr30k.yaml
 
 Optional: save metrics to JSON with `--output metrics.json`.
 
-## Next
-
-- Record baseline metrics (run eval, paste in README).
-- Demo zero-shot on custom images (plan step 6–7).
-- **Stage A1:** Reset and retrain projection heads only.
-
-(Full progress: [docs/plans/tiny-clip.md](../../docs/plans/tiny-clip.md) § Progress.)
+What’s next: see [plan § Stage A0 implementation steps](../../docs/plans/tiny-clip.md) (checkboxes).

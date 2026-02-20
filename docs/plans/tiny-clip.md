@@ -1,15 +1,5 @@
 # Tiny-CLIP Project Plan
 
-## Progress
-
-**Done:** Placement (1); scaffold (2); data + DataLoader + Parquet revision (3); data sanity check + sample image in README; eval script on 1k test set (4); config for standard 1k benchmark; root + tiny-clip READMEs.
-
-**Next:** Run eval, record baseline metrics (5); demo zero-shot on custom images (6); README polish (7). Then Stage A1.
-
-**Decisions:** Plan and progress live in this file. Eval uses Flickr30k 1k test set. CLIP/model loaded from HF (cached); script does not save model, only metrics.
-
----
-
 ## Goal
 
 Demonstrate contrastive learning (InfoNCE) and retrieval in two ways:
@@ -133,49 +123,50 @@ Do NOT report metrics computed only within a minibatch.
 
 Do in order so each step can be checked and committed.
 
-1. **Placement**
+- [x] **1. Placement**
    Create `foundations/tiny-clip/` and subdirs only: `src/`, `configs/`, `notebooks/`, `demos/`. No code yet. Commit.
 
-2. **Scaffold**
+- [x] **2. Scaffold**
    - Add minimal files: `src/data.py`, `models.py`, `loss.py`, `train.py`, `eval_retrieval.py`, `utils.py` (stubs or minimal docstrings; `train.py` and `loss.py` not used in A0).
    - Add `configs/flickr30k.yaml` (and optionally `flickr8k.yaml`) with keys: `dataset_name` (e.g. `nlphuji/flickr30k`), `split` (e.g. `test` or `val`), `batch_size`, and any paths if supporting local data.
    - Add `foundations/tiny-clip/requirements.txt`: `torch`, `transformers`, `datasets`, `Pillow`, `pyyaml`.
    Commit.
 
-3. **Data**
+- [x] **3. Data**
    - In `src/data.py`, implement a Dataset that loads Flickr30k via `datasets.load_dataset(...)` (dataset name from config), applies `CLIPProcessor` (image + text), and returns batches compatible with CLIP (e.g. `pixel_values`, `input_ids`, `attention_mask`).
    - Add a small helper to build the DataLoader from config.
    Commit.
 
-4. **Eval script**
+- [x] **4. Eval script**
    - Add `eval_retrieval.py` (or `eval_clip_zeroshot.py`) in `src/` or as a script under `foundations/tiny-clip/`: load config → load `CLIPModel` and `CLIPProcessor` from `openai/clip-vit-base-patch32` → load eval data via `get_dataloader(config, processor, for_eval=True)` (standard 1k test set) → compute image and text embeddings → similarity matrix → R@1, R@5, R@10 for text→image and image→text.
    - Optionally save a few qualitative examples (top-k retrievals).
    Commit.
 
-5. **Run Stage A0**
+- [ ] **5. Run Stage A0**
    - Run the eval script (no training). Record baseline metrics (e.g. in a small table or JSON).
    - Confirm numbers are strong (not random), so the pipeline is correct.
 
-6. **Demo: zero-shot on custom images**
+- [ ] **6. Demo: zero-shot on custom images**
    - Run pretrained CLIP on 1–3 **images the model has never seen** (e.g. profile picture, other sharable personal photos). No training or fine-tuning on these images.
    - For each image: show **top-k retrieved captions** (from the eval set) or similarity to a few hand-written captions. Save figure(s).
    - Add a **Results** or **Demo** section in `foundations/tiny-clip/README.md` that includes these examples (image + retrieved captions). Use only images you are comfortable sharing in the repo.
 
-   6b. **Optional personal mini-retrieval demo (with self-written ground truth)**
-   - Add 1–10 personal photos (only if comfortable sharing; otherwise keep local only).
-   - For each photo, write 1–3 captions (self-authored ground truth).
-   - Build a small eval pool: personal photos + N Flickr distractor images, and personal captions + M Flickr distractor captions.
-   - Run both:
-     - t2i: each personal caption should retrieve its paired personal photo in top-K
-     - i2t: each personal photo should retrieve its caption(s) in top-K
-   - Label this section clearly as **qualitative / mini-demo**, not an official benchmark.
+   - [ ] **6b. Optional personal mini-retrieval demo** (with self-written ground truth)
+     - Add 1–10 personal photos (only if comfortable sharing; otherwise keep local only).
+     - For each photo, write 1–3 captions (self-authored ground truth).
+     - Build a small eval pool: personal photos + N Flickr distractor images, and personal captions + M Flickr distractor captions.
+     - Run both:
+       - t2i: each personal caption should retrieve its paired personal photo in top-K
+       - i2t: each personal photo should retrieve its caption(s) in top-K
+     - Label this section clearly as **qualitative / mini-demo**, not an official benchmark.
 
-
-7. **README**
+- [ ] **7. README**
    - In `foundations/tiny-clip/README.md`: how to install deps (`pip install -r requirements.txt`), how to run the zero-shot eval (e.g. `python eval_retrieval.py --config configs/flickr30k.yaml`), what the config keys mean, and where to paste the baseline metrics.
    Commit.
 
 After this, Stage A0 is done. A1 will add resetting projections and training.
+
+**Decisions (reference):** Eval uses Flickr30k 1k test set. CLIP loaded from HF (cached); eval script does not save model, only metrics. Progress = checkboxes above (single source of truth).
 
 ### Stage A1 — Reset and retrain projection heads only
 
