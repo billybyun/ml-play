@@ -70,6 +70,35 @@ For both tracks:
 - **Image → Text:** rank captions by similarity to each image → Recall@1, @5, @10
 - **Optional:** median rank, qualitative top-5 examples
 
+## Retrieval task definition (important)
+
+This project uses **image-text retrieval**, not generation.
+
+- We never reconstruct pixels or generate words.
+- We embed images and captions into a shared space and rank by similarity.
+
+Two tasks:
+
+1) **Text → Image retrieval (t2i)**  
+Given a caption, rank **all candidate images in the eval split** by similarity and check whether the correct image is in top-K.
+
+2) **Image → Text retrieval (i2t)**  
+Given an image, rank **all candidate captions in the eval split** by similarity and check whether any of the image’s ground-truth captions (typically 5) is in top-K.
+
+### Training vs evaluation pools
+
+- **Training (contrastive loss):** typically uses **in-batch negatives** (B×B logits matrix).
+- **Evaluation (retrieval metrics):** uses the **full eval pool**, not the batch.
+
+For Flickr30k test split:
+- pool for t2i = #images in split
+- pool for i2t = #captions in split (= 5 × #images)
+
+Do NOT report metrics computed only within a minibatch.
+
+
+
+
 ---
 
 ## Track A: Modify Pretrained CLIP
