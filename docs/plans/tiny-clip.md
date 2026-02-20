@@ -1,5 +1,15 @@
 # Tiny-CLIP Project Plan
 
+## Progress
+
+**Done:** Placement (1); scaffold (2); data + DataLoader + Parquet revision (3); data sanity check + sample image in README; eval script on 1k test set (4); config for standard 1k benchmark; root + tiny-clip READMEs.
+
+**Next:** Run eval, record baseline metrics (5); demo zero-shot on custom images (6); README polish (7). Then Stage A1.
+
+**Decisions:** Plan and progress live in this file. Eval uses Flickr30k 1k test set. CLIP/model loaded from HF (cached); script does not save model, only metrics.
+
+---
+
 ## Goal
 
 Demonstrate contrastive learning (InfoNCE) and retrieval in two ways:

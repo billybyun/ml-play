@@ -31,7 +31,20 @@ Output: dataset size, batch tensor shapes, and `Saved visualization to .../sanit
 - **configs/flickr30k.yaml** — dataset name, split, batch size, revision (Parquet). Retrieval evaluation uses the **standard 1k test set** (`eval_dataset_name: nlphuji/flickr_1k_test_image_text_retrieval`) so numbers are comparable to papers.
 - **configs/flickr8k.yaml** — optional smaller dataset.
 
+## Zero-shot retrieval eval
+
+Run retrieval evaluation on the **standard 1k test set** (comparable to papers):
+
+```bash
+python -m src.eval_retrieval --config configs/flickr30k.yaml
+```
+
+Optional: save metrics to JSON with `--output metrics.json`.
+
 ## Next
 
-- **Stage A0:** Zero-shot eval script (R@1/5/10).
+- Record baseline metrics (run eval, paste in README).
+- Demo zero-shot on custom images (plan step 6–7).
 - **Stage A1:** Reset and retrain projection heads only.
+
+(Full progress: [docs/plans/tiny-clip.md](../../docs/plans/tiny-clip.md) § Progress.)
