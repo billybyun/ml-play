@@ -26,6 +26,14 @@ python -m src.data
 
 Output: dataset size, batch tensor shapes, and `Saved visualization to .../sanity_check_samples.png`. Re-run to regenerate the image after config or code changes.
 
+**Split disjointness check (before training):** Verify that train and 1k test are disjoint so you can safely use `train_split: "train"`:
+
+```bash
+python -m src.data --check-splits
+```
+
+Runs the data sanity check and additionally verifies: train ∩ test = ∅ and 30k test = 1k benchmark. If this passes, you can train on `split="train"` without data leakage.
+
 ## Config
 
 - **configs/flickr30k.yaml** — dataset name, split, batch size, revision (Parquet). Retrieval evaluation uses the **standard 1k test set** (`eval_dataset_name: nlphuji/flickr_1k_test_image_text_retrieval`) so numbers are comparable to papers.

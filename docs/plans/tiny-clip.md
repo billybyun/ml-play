@@ -60,6 +60,20 @@ foundations/tiny-clip/
 - Optionally supports a local dataset path from config (e.g. manual download) for the same interface.
 - Single place for transforms/tokenization; easy to plug into `DataLoader` and to add augmentation later.
 
+### Split disjointness sanity check
+
+**Purpose:** Verify that `nlphuji/flickr30k` uses Karpathy-style splits so `split="train"` does not overlap with the 1k test benchmark.
+
+**What to check:**
+- Load `nlphuji/flickr30k` with `split="train"` and `split="test"`.
+- Load `nlphuji/flickr_1k_test_image_text_retrieval`.
+- Extract a stable identifier per image (e.g. `image` column hash, or `id`/`filename` if present).
+- Assert: `train_ids ∩ test_ids = ∅` and `test_ids_30k == test_ids_1k` (or equivalent).
+
+**When to run:** Before Stage A1 (or any training). Add to data sanity check or as a standalone script.
+
+**If verification fails:** Do not use `split="train"` blindly; consider using Karpathy split files directly or a different dataset version.
+
 ---
 
 ## Evaluation (shared)
@@ -175,6 +189,8 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
 - **Expected before training:** Retrieval drops to near random.
 - **Training:** Train only projection layers (+ temperature). Loss: symmetric CLIP InfoNCE — `(CE(sim, targets) + CE(sim.T, targets)) / 2`.
 - **Deliverables:** e.g. `train_projector.py`, training curve, before/after metrics, ablation (pretrained vs reset vs retrained).
+
+**Training data:** Use `train_split: "train"` only. Never train on `split="test"` (that is the 1k eval set). Run the split disjointness check (step 8) before first training run.
 
 ### Stage A2 — Partial fine-tuning (unfreeze encoder)
 

@@ -1,6 +1,7 @@
 # Flickr30k — primary dataset for tiny-clip (Track A / B)
 dataset_name: "nlphuji/flickr30k"
-split: "test"  # full split for data sanity check / training
+split: "test"  # for data sanity check; use train_split for training
+train_split: "train"  # use for training; never train on "test" (1k eval set)
 batch_size: 32
 # Parquet revision avoids "dataset scripts are no longer supported" (HF deprecation)
 revision: "refs/convert/parquet"
@@ -8,7 +9,7 @@ revision: "refs/convert/parquet"
 # Standard retrieval benchmark: 1k test set (same as papers)
 eval_dataset_name: "nlphuji/flickr_1k_test_image_text_retrieval"
 eval_split: "test"
-# eval_revision: null  # unset = use default branch (1k set is parquet-converted)
+eval_revision: "refs/convert/parquet"  # required: avoids "dataset scripts are no longer supported"
 
 # Optional: local root if using manual download instead of HF
 # data_root: null
