@@ -212,6 +212,8 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
 
 **Models:** Pretrained ViT (e.g. `vit_base_patch16_224` from timm) + pretrained text encoder (e.g. DistilBERT from Hugging Face). We add our own projection heads and learnable temperature.
 
+**Reference:** [docs/clip_architecture.md](../clip_architecture.md) — CLIP structure, loss, and Track B vs CLIP.
+
 ### Stage B0 — Sanity check (no training)
 
 - **Goal:** Validate data pipeline and metrics; establish baseline.
