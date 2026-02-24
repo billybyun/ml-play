@@ -61,6 +61,14 @@ Optional: save metrics to JSON with `--output metrics.json`.
 | R@5 | 95.0% | 83.4% |
 | R@10 | 98.1% | 90.1% |
 
+**Dual encoder baseline (B0 — random projections, no training, Flickr30k 1k test):**
+
+| Metric | i2t | t2i |
+|--------|-----|-----|
+| R@1 | 0.1% | 0.08% |
+| R@5 | 0.7% | 0.32% |
+| R@10 | 1.0% | 0.82% |
+
 ## Custom images demo (Step 6)
 
 Put 1–3 images in **`demos/custom_images/`** (jpg/png). For the basic demo you only need images—the script retrieves top-k captions from the Flickr30k 1k set. Optionally add `captions.txt` (one caption per line) to test similarity to your own text. See [demos/custom_images/README.md](demos/custom_images/README.md) for details.
