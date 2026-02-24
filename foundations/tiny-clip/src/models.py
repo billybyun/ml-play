@@ -1,6 +1,6 @@
-# models.py — Track A: CLIP wrapper; Track B: ViT + text encoder + projection heads.
+# models.py — Track A: CLIP wrapper; Custom dual encoder: ViT + text encoder + projection heads.
 """
-Track B: DualEncoderModel — timm ViT + DistilBERT + random projection heads.
+Custom dual encoder: DualEncoderModel — timm ViT + DistilBERT + our projection heads.
 Same structure as CLIP: two encoders, projections to shared dim, L2-normalized embeddings.
 """
 import torch
@@ -27,7 +27,7 @@ class DualEncoderModel(nn.Module):
     ):
         super().__init__()
         if timm is None:
-            raise ImportError("timm is required for Track B. pip install timm")
+            raise ImportError("timm is required for custom dual encoder. pip install timm")
 
         # Vision encoder (timm ViT) — output 768
         self.vision_encoder = timm.create_model(vision_model, pretrained=True, num_classes=0)

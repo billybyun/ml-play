@@ -16,3 +16,7 @@ text_max_length: 128
 eval_dataset_name: "nlphuji/flickr_1k_test_image_text_retrieval"
 eval_split: "test"
 eval_revision: "refs/convert/parquet"
+
+# Training (Stage B1)
+# Run: python -m src.train --config configs/custom_dual_encoder.yaml
+# Optional: --epochs 5 --lr 1e-4 --output-dir checkpoints/dual_encoder

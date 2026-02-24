@@ -5,6 +5,7 @@ import os
 
 import torch
 from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms
 from datasets import load_dataset
 
 
@@ -84,7 +85,52 @@ def get_dataloader(config: dict, processor, split: str | None = None, shuffle: b
     )
 
 
-def get_dataloader_track_b(
+def get_dual_encoder_image_transform():
+    """Image transforms for custom dual encoder (timm ViT: 224x224, ImageNet normalize)."""
+    return transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+
+
+get_track_b_image_transform = get_dual_encoder_image_transform
+
+
+class Flickr30kDualEncoderDataset(Dataset):
+    """Flickr30k with ViT image transforms + DistilBERT tokenizer."""
+    def __init__(self, dataset_name: str, split: str, tokenizer, image_transform, max_length: int = 128, revision: str | None = "refs/convert/parquet"):
+        self.tokenizer, self.image_transform, self.max_length = tokenizer, image_transform, max_length
+        self.hf_ds = load_dataset(dataset_name, split=split, revision=revision) if revision else load_dataset(dataset_name, split=split)
+        if "image" not in self.hf_ds.column_names or "caption" not in self.hf_ds.column_names:
+            raise ValueError(f"Expected 'image' and 'caption'; got {self.hf_ds.column_names}")
+
+    def __len__(self) -> int:
+        return len(self.hf_ds)
+
+    def __getitem__(self, idx: int) -> dict:
+        row = self.hf_ds[idx]
+        captions = row["caption"] if isinstance(row["caption"], list) else [row["caption"]]
+        captions = (captions * 5)[:5]
+        pixel_values = self.image_transform(row["image"])
+        enc = self.tokenizer(captions, return_tensors="pt", padding="max_length", max_length=self.max_length, truncation=True)
+        return {"pixel_values": pixel_values, "input_ids": enc["input_ids"], "attention_mask": enc["attention_mask"]}
+
+
+def get_dataloader_dual_encoder(config, tokenizer, image_transform, split=None, shuffle=False, for_eval=False):
+    """Build DataLoader for custom dual encoder."""
+    batch_size = config.get("batch_size", 32)
+    if for_eval and config.get("eval_dataset_name"):
+        dataset_name, split = config["eval_dataset_name"], split or config.get("eval_split", "test")
+        revision = config.get("eval_revision", "refs/convert/parquet")
+    else:
+        dataset_name, revision = config["dataset_name"], config.get("revision", "refs/convert/parquet")
+        split = split or config.get("train_split", config.get("split", "train"))
+    ds = Flickr30kDualEncoderDataset(dataset_name, split, tokenizer, image_transform, config.get("text_max_length", 128), revision)
+    return DataLoader(ds, batch_size=batch_size, shuffle=shuffle, num_workers=0, collate_fn=_collate_fn_track_b)
+
+
+def _unused_get_dataloader_track_b(
     config: dict,
     tokenizer,
     image_transform,
@@ -92,7 +138,7 @@ def get_dataloader_track_b(
     shuffle: bool = False,
     for_eval: bool = False,
 ) -> DataLoader:
-    """Build a DataLoader for custom dual encoder (ViT + DistilBERT). Same batch shape as CLIP."""
+    """Build a DataLoader for Track B (ViT + DistilBERT). Same batch shape as CLIP."""
     batch_size = config.get("batch_size", 32)
     if for_eval and config.get("eval_dataset_name"):
         dataset_name = config["eval_dataset_name"]
@@ -112,12 +158,12 @@ def get_dataloader_track_b(
         batch_size=batch_size,
         shuffle=shuffle,
         num_workers=0,
-        collate_fn=_collate_fn_dual_encoder,
+        collate_fn=_collate_fn_track_b,
     )
 
 
-def _collate_fn_dual_encoder(batch: list[dict]) -> dict:
-    """Stack batch for dual encoder; input_ids/attention_mask come as (5, L) per item."""
+def _collate_fn_track_b(batch: list[dict]) -> dict:
+    """Stack batch; input_ids/attention_mask come as (5, L) per item."""
     pixel_values = torch.stack([b["pixel_values"] for b in batch])
     input_ids = torch.stack([b["input_ids"].squeeze(0) for b in batch])      # (B, 5, L)
     attention_mask = torch.stack([b["attention_mask"].squeeze(0) for b in batch])
