@@ -49,4 +49,16 @@ python -m src.eval_retrieval --config configs/flickr30k.yaml
 
 Optional: save metrics to JSON with `--output metrics.json`.
 
+**Baseline (zero-shot CLIP ViT-B/32, Flickr30k 1k test):**
+
+| Metric | i2t | t2i |
+|--------|-----|-----|
+| R@1 | 79.3% | 58.8% |
+| R@5 | 95.0% | 83.4% |
+| R@10 | 98.1% | 90.1% |
+
+## Custom images demo (Step 6)
+
+Put 1–3 images in **`demos/custom_images/`** (jpg/png). For the basic demo you only need images—the script retrieves top-k captions from the Flickr30k 1k set. Optionally add `captions.txt` (one caption per line) to test similarity to your own text. See [demos/custom_images/README.md](demos/custom_images/README.md) for details.
+
 What’s next: see [plan § Stage A0 implementation steps](../../docs/plans/tiny-clip.md) (checkboxes).

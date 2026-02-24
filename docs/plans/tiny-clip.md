@@ -156,7 +156,7 @@ Do in order so each step can be checked and committed.
    - Optionally save a few qualitative examples (top-k retrievals).
    Commit.
 
-- [ ] **5. Run Stage A0**
+- [x] **5. Run Stage A0**
    - Run the eval script (no training). Record baseline metrics (e.g. in a small table or JSON).
    - Confirm numbers are strong (not random), so the pipeline is correct.
 
@@ -181,6 +181,8 @@ Do in order so each step can be checked and committed.
 After this, Stage A0 is done. A1 will add resetting projections and training.
 
 **Decisions (reference):** Eval uses Flickr30k 1k test set. CLIP loaded from HF (cached); eval script does not save model, only metrics. Progress = checkboxes above (single source of truth).
+
+**Current focus:** Steps 6, 6b deferred. Understanding CLIP better first, then proceed to Track A (A1 → A2) or Track B (B0 → B1 → B2). Come back to custom demo (6, 6b) later.
 
 ### Stage A1 — Reset and retrain projection heads only
 
