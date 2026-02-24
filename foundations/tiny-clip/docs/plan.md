@@ -221,6 +221,19 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
 - **Expected:** Retrieval near random.
 - **Deliverables:** Baseline metrics in README.
 
+#### Implementation steps for Stage B0
+
+- [x] **1. Model & data**
+   - Add `DualEncoderModel` (timm ViT + DistilBERT + random projection heads) in `src/models.py`.
+   - Add dual-encoder dataset and `get_dataloader_dual_encoder`, `get_dual_encoder_image_transform` in `src/data.py`.
+   - Add `configs/custom_dual_encoder.yaml`.
+
+- [x] **2. Eval script**
+   - Extend `eval_retrieval.py` with `--model-type dual_encoder`; load dual encoder, run retrieval on 1k test set.
+
+- [x] **3. Run Stage B0**
+   - Run eval with random projections. Record baseline metrics in README (near random expected).
+
 ### Stage B1 — Train projections only
 
 - **Goal:** Fast "it works" milestone.
@@ -228,6 +241,20 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
 - **Loss:** Symmetric InfoNCE; L2-normalize embeddings; sim = (z_img @ z_txt^T) / tau.
 - **Expected:** Retrieval improves noticeably over B0.
 - **Deliverables:** Training curve, before/after retrieval examples.
+
+#### Implementation steps for Stage B1
+
+- [x] **1. Loss**
+   - Implement symmetric InfoNCE in `src/loss.py`.
+
+- [x] **2. Training loop**
+   - Add dual-encoder training in `src/train.py`; config-driven; save checkpoints.
+
+- [x] **3. Config**
+   - Add training settings to `custom_dual_encoder.yaml` (epochs, lr, output-dir).
+
+- [ ] **4. Run Stage B1**
+   - Train projections; run eval on best checkpoint; record metrics in README.
 
 ### Stage B2 — Unfreeze part of encoder
 
@@ -237,6 +264,14 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
   - **Option B:** Unfreeze full text encoder (ViT frozen).
 - **Training:** Lower LR for encoders, higher for projections; weight decay / dropout as needed.
 - **Deliverables:** Ablation table: proj-only vs unfreeze ViT vs unfreeze text.
+
+#### Implementation steps for Stage B2
+
+- [ ] **1. Unfreeze strategy**
+   - Implement Option A or B; separate param groups for projections vs encoder.
+
+- [ ] **2. Run Stage B2**
+   - Train; compare to B1; add to ablation table in README.
 
 **Note on small data (Flickr):** Same as Track A: on Flickr-sized data, unfreezing (Stage B2) often gives little or no gain; main gains usually from Stage B1. Keep B2 as an exploratory step and report results honestly.
 
