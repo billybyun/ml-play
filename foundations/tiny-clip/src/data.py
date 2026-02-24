@@ -84,6 +84,50 @@ def get_dataloader(config: dict, processor, split: str | None = None, shuffle: b
     )
 
 
+def get_dataloader_track_b(
+    config: dict,
+    tokenizer,
+    image_transform,
+    split: str | None = None,
+    shuffle: bool = False,
+    for_eval: bool = False,
+) -> DataLoader:
+    """Build a DataLoader for custom dual encoder (ViT + DistilBERT). Same batch shape as CLIP."""
+    batch_size = config.get("batch_size", 32)
+    if for_eval and config.get("eval_dataset_name"):
+        dataset_name = config["eval_dataset_name"]
+        split = split or config.get("eval_split", "test")
+        revision = config.get("eval_revision", "refs/convert/parquet")
+    else:
+        dataset_name = config["dataset_name"]
+        split = split or config.get("split", "test")
+        revision = config.get("revision", "refs/convert/parquet")
+    dataset = Flickr30kDualEncoderDataset(
+        dataset_name, split, tokenizer, image_transform,
+        max_length=config.get("text_max_length", 128),
+        revision=revision,
+    )
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=0,
+        collate_fn=_collate_fn_dual_encoder,
+    )
+
+
+def _collate_fn_dual_encoder(batch: list[dict]) -> dict:
+    """Stack batch for dual encoder; input_ids/attention_mask come as (5, L) per item."""
+    pixel_values = torch.stack([b["pixel_values"] for b in batch])
+    input_ids = torch.stack([b["input_ids"].squeeze(0) for b in batch])      # (B, 5, L)
+    attention_mask = torch.stack([b["attention_mask"].squeeze(0) for b in batch])
+    return {
+        "pixel_values": pixel_values,
+        "input_ids": input_ids,
+        "attention_mask": attention_mask,
+    }
+
+
 def _image_id(row: dict) -> str:
     """Extract a stable identifier for an image (hash of bytes)."""
     img = row["image"]

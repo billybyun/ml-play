@@ -5,7 +5,7 @@
 Demonstrate contrastive learning (InfoNCE) and retrieval in two ways:
 
 1. **Track A — Modify pretrained CLIP:** Start from full CLIP, then reset/retrain parts (projections, optionally unfreeze encoders) to see controlled destruction and recovery of alignment.
-2. **Track B — Build from components:** Compose a pretrained ViT + pretrained text encoder, add our own projection heads, and train alignment from (near) random.
+2. **Custom dual encoder — Build from components:** Compose a pretrained ViT + pretrained text encoder, add our own projection heads, and train alignment from (near) random. We connect the encoders ourselves for CLIP-style contrastive learning.
 
 Deliverables across both tracks:
 
@@ -56,7 +56,7 @@ foundations/tiny-clip/
 - Keep dataset choice configurable in `configs/*.yaml`.
 
 **Data pipeline:** Use a thin **Dataset class** (or wrapper) that:
-- For HF: wraps `load_dataset("nlphuji/flickr30k")` (or dataset name from config); applies CLIP processor (Track A) or image transforms + tokenizer (Track B); returns `(pixel_values, input_ids, attention_mask)` or equivalent for the chosen model.
+- For HF: wraps `load_dataset("nlphuji/flickr30k")` (or dataset name from config); applies CLIP processor (Track A) or image transforms + tokenizer (custom dual encoder); returns `(pixel_values, input_ids, attention_mask)` or equivalent for the chosen model.
 - Optionally supports a local dataset path from config (e.g. manual download) for the same interface.
 - Single place for transforms/tokenization; easy to plug into `DataLoader` and to add augmentation later.
 
@@ -212,7 +212,7 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
 
 **Models:** Pretrained ViT (e.g. `vit_base_patch16_224` from timm) + pretrained text encoder (e.g. DistilBERT from Hugging Face). We add our own projection heads and learnable temperature.
 
-**Reference:** [docs/clip_architecture.md](../clip_architecture.md) — CLIP structure, loss, and Track B vs CLIP.
+**Reference:** [docs/architecture.md](../architecture.md) — CLIP structure, loss, and Track B vs CLIP.
 
 ### Stage B0 — Sanity check (no training)
 
@@ -266,4 +266,4 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
 
 ## Narrative (optional)
 
-This project demonstrates: (1) proper evaluation of pretrained CLIP; (2) controlled destruction and recovery of alignment (Track A); (3) building and aligning a dual-encoder system from components (Track B); (4) modular freeze/unfreeze strategies and ablations; (5) practical contrastive learning and retrieval evaluation.
+This project demonstrates: (1) proper evaluation of pretrained CLIP; (2) controlled destruction and recovery of alignment (Track A); (3) building and aligning a dual-encoder system from components (custom dual encoder); (4) modular freeze/unfreeze strategies and ablations; (5) practical contrastive learning and retrieval evaluation.

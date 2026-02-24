@@ -1,0 +1,18 @@
+# Custom dual encoder — We connect ViT + text encoder ourselves for CLIP-style contrastive learning.
+# (Build from components: pretrained ViT + pretrained BERT + our projection heads)
+vision_model: "vit_base_patch16_224"
+text_model: "distilbert-base-uncased"
+projection_dim: 512
+
+# Dataset (same as flickr30k)
+dataset_name: "nlphuji/flickr30k"
+split: "test"
+train_split: "train"
+batch_size: 32
+revision: "refs/convert/parquet"
+text_max_length: 128
+
+# Eval (1k benchmark)
+eval_dataset_name: "nlphuji/flickr_1k_test_image_text_retrieval"
+eval_split: "test"
+eval_revision: "refs/convert/parquet"

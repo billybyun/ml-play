@@ -44,7 +44,11 @@ Runs the data sanity check and additionally verifies: train ∩ test = ∅ and 3
 Run retrieval evaluation on the **standard 1k test set** (comparable to papers):
 
 ```bash
+# CLIP (default)
 python -m src.eval_retrieval --config configs/flickr30k.yaml
+
+# Custom dual encoder (ViT + DistilBERT, random projections)
+python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-type dual_encoder
 ```
 
 Optional: save metrics to JSON with `--output metrics.json`.

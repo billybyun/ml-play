@@ -1,6 +1,6 @@
 # CLIP Architecture (for Tiny-CLIP)
 
-Reference for understanding CLIP before and during Track B. See Hugging Face: `transformers.models.clip`.
+Reference for understanding CLIP before and during custom dual encoder. See Hugging Face: `transformers.models.clip`.
 
 ---
 
@@ -55,9 +55,9 @@ For batch of B image-text pairs:
 
 ---
 
-## Track B vs CLIP
+## Custom dual encoder vs CLIP
 
-| | CLIP | Track B (DualEncoder) |
+| | CLIP | Custom dual encoder (DualEncoderModel) |
 |---|------|------------------------|
 | Vision | CLIP ViT (HF) | timm ViT-B/16 (768-d) |
 | Text | CLIP text (HF) | DistilBERT (768-d) |

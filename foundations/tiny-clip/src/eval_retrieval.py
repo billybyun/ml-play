@@ -62,6 +62,7 @@ def compute_metrics(sim: torch.Tensor, n_images: int) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Zero-shot retrieval eval (Flickr30k 1k test set)")
     parser.add_argument("--config", type=str, default="configs/flickr30k.yaml", help="Path to config YAML")
+    parser.add_argument("--model-type", type=str, default="clip", choices=["clip", "dual"], help="clip or dual (Track B)")
     parser.add_argument("--output", type=str, default=None, help="Path to save metrics JSON (default: print only)")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
@@ -76,11 +77,27 @@ def main():
     set_seed(args.seed)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
-    processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-    model.eval()
 
-    loader = get_dataloader(config, processor, for_eval=True)
+    if args.model_type == "clip":
+        model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
+        processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+        loader = get_dataloader(config, processor, for_eval=True)
+        model_label = "CLIP ViT-B/32"
+    else:
+        model = DualEncoderModel(
+            vision_model=config.get("vision_model", "vit_base_patch16_224"),
+            text_model=config.get("text_model", "distilbert-base-uncased"),
+        ).to(device)
+        for p in model.vision_encoder.parameters():
+            p.requires_grad = False
+        for p in model.text_encoder.parameters():
+            p.requires_grad = False
+        tokenizer = AutoTokenizer.from_pretrained(config.get("text_model", "distilbert-base-uncased"))
+        image_transform = get_dual_encoder_image_transform()
+        loader = get_dataloader_dual_encoder(config, tokenizer, image_transform, for_eval=True)
+        model_label = "Custom dual encoder (ViT + DistilBERT, random projections)"
+
+    model.eval()
     n_images = len(loader.dataset)
 
     image_embeds_list = []
@@ -110,8 +127,9 @@ def main():
     metrics = compute_metrics(sim, n_images)
     metrics["n_images"] = n_images
     metrics["split"] = "1k test (standard benchmark)"
+    metrics["model"] = model_label
 
-    print("Retrieval metrics (zero-shot CLIP, Flickr30k 1k test set):")
+    print(f"Retrieval metrics ({model_label}, Flickr30k 1k test set):")
     for k, v in metrics.items():
         print(f"  {k}: {v}")
 
