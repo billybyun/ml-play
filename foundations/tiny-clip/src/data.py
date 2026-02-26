@@ -97,11 +97,31 @@ def get_dual_encoder_image_transform():
 get_track_b_image_transform = get_dual_encoder_image_transform
 
 
+def _use_parquet_filter(dataset_name: str, revision: str | None) -> bool:
+    """True if dataset uses parquet revision with only HF split 'test' (filter by internal split column)."""
+    return (
+        "flickr30k" in dataset_name.lower()
+        and revision is not None
+        and "parquet" in str(revision).lower()
+    )
+
+
 class Flickr30kDualEncoderDataset(Dataset):
     """Flickr30k with ViT image transforms + DistilBERT tokenizer."""
-    def __init__(self, dataset_name: str, split: str, tokenizer, image_transform, max_length: int = 128, revision: str | None = "refs/convert/parquet"):
+    def __init__(
+        self,
+        dataset_name: str,
+        split: str,
+        tokenizer,
+        image_transform,
+        max_length: int = 128,
+        revision: str | None = "refs/convert/parquet",
+        subset_split: str | None = None,
+    ):
         self.tokenizer, self.image_transform, self.max_length = tokenizer, image_transform, max_length
         self.hf_ds = load_dataset(dataset_name, split=split, revision=revision) if revision else load_dataset(dataset_name, split=split)
+        if subset_split is not None and "split" in self.hf_ds.column_names:
+            self.hf_ds = self.hf_ds.filter(lambda x: x["split"] == subset_split)
         if "image" not in self.hf_ds.column_names or "caption" not in self.hf_ds.column_names:
             raise ValueError(f"Expected 'image' and 'caption'; got {self.hf_ds.column_names}")
 
@@ -223,10 +243,13 @@ def check_split_disjointness(
 
     overlap = train_ids & test_30k_ids
     assert len(overlap) == 0, f"Train and test overlap: {len(overlap)} images. Do not use split='train' for training."
+    print("  ✓ Train ∩ test = ∅ (no overlap between train and test images)")
+
     assert test_30k_ids == test_1k_ids, (
         f"30k test and 1k benchmark differ: 30k has {len(test_30k_ids)}, 1k has {len(test_1k_ids)}, "
         f"symmetric diff size {len(test_30k_ids ^ test_1k_ids)}."
     )
+    print("  ✓ test_30k_ids == test_1k_ids (1k test from nlphuji/flickr30k exactly matches nlphuji/flickr_1k_test_image_text_retrieval)")
     return True
 
 

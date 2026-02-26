@@ -64,6 +64,7 @@ def main():
     parser = argparse.ArgumentParser(description="Zero-shot retrieval eval (Flickr30k 1k test set)")
     parser.add_argument("--config", type=str, default="configs/flickr30k.yaml", help="Path to config YAML")
     parser.add_argument("--model-type", type=str, default="clip", choices=["clip", "dual", "dual_encoder"], help="clip or dual_encoder (custom ViT+DistilBERT)")
+    parser.add_argument("--checkpoint", type=str, default=None, help="Path to checkpoint for dual_encoder (load trained weights)")
     parser.add_argument("--output", type=str, default=None, help="Path to save metrics JSON (default: print only)")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
