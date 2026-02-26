@@ -26,18 +26,38 @@ python -m src.data
 
 Output: dataset size, batch tensor shapes, and `Saved visualization to .../sanity_check_samples.png`. Re-run to regenerate the image after config or code changes.
 
-**Split disjointness check (before training):** Verify that train and 1k test are disjoint so you can safely use `train_split: "train"`:
+**Parquet split handling:** The nlphuji/flickr30k parquet revision exposes only one HF split (`"test"`). The real train/val/test division is in an internal `split` column. We load HF `"test"` and filter by `split == "train"` for training. Optional: run `python verify_split.py` (from project root, with `conda activate ml-play`) to confirm the split column exists.
+
+**Split disjointness check (before training):** Verify that train and 1k test are disjoint and that 30k test matches the 1k benchmark:
 
 ```bash
 python -m src.data --check-splits
 ```
 
-Runs the data sanity check and additionally verifies: train ∩ test = ∅ and 30k test = 1k benchmark. If this passes, you can train on `split="train"` without data leakage.
+Verifies: train ∩ test = ∅ and 30k test == 1k benchmark. If this passes, you can train without data leakage.
 
 ## Config
 
 - **configs/flickr30k.yaml** — dataset name, split, batch size, revision (Parquet). Retrieval evaluation uses the **standard 1k test set** (`eval_dataset_name: nlphuji/flickr_1k_test_image_text_retrieval`) so numbers are comparable to papers.
 - **configs/flickr8k.yaml** — optional smaller dataset.
+- **configs/custom_dual_encoder.yaml** — dual encoder (ViT + DistilBERT); used for training and eval.
+
+## Train dual encoder (Stage B1)
+
+Train projection heads only (encoders frozen). Run split disjointness check first:
+
+```bash
+python -m src.data --check-splits
+python -m src.train --config configs/custom_dual_encoder.yaml
+```
+
+Optional: `--epochs 5 --lr 1e-4 --output-dir checkpoints/dual_encoder`. Checkpoint saved to `{output-dir}/final.pt`.
+
+Eval with trained weights:
+
+```bash
+python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-type dual_encoder --checkpoint checkpoints/dual_encoder/final.pt
+```
 
 ## Zero-shot retrieval eval
 

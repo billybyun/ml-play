@@ -88,15 +88,22 @@ def main():
         model = DualEncoderModel(
             vision_model=config.get("vision_model", "vit_base_patch16_224"),
             text_model=config.get("text_model", "distilbert-base-uncased"),
+            projection_dim=config.get("projection_dim", 512),
         ).to(device)
         for p in model.vision_encoder.parameters():
             p.requires_grad = False
         for p in model.text_encoder.parameters():
             p.requires_grad = False
+        if args.checkpoint:
+            ckpt_path = args.checkpoint if os.path.isabs(args.checkpoint) else os.path.join(root, args.checkpoint)
+            ckpt = torch.load(ckpt_path, map_location=device)
+            model.load_state_dict(ckpt["model_state_dict"], strict=True)
+            model_label = "Dual encoder (ViT + DistilBERT, trained)"
+        else:
+            model_label = "Dual encoder (ViT + DistilBERT, random projections)"
         tokenizer = AutoTokenizer.from_pretrained(config.get("text_model", "distilbert-base-uncased"))
         image_transform = get_dual_encoder_image_transform()
         loader = get_dataloader_dual_encoder(config, tokenizer, image_transform, for_eval=True)
-        model_label = "Dual encoder (ViT + DistilBERT, random projections)"
 
     model.eval()
     n_images = len(loader.dataset)

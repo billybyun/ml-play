@@ -60,19 +60,23 @@ foundations/tiny-clip/
 - Optionally supports a local dataset path from config (e.g. manual download) for the same interface.
 - Single place for transforms/tokenization; easy to plug into `DataLoader` and to add augmentation later.
 
+**Parquet filter (implemented):** nlphuji/flickr30k parquet exposes only HF split `"test"`. We load it and filter by the internal `split` column (`"train"`, `"val"`, `"test"`) to get the desired subset. `Flickr30kCLIPDataset` and `Flickr30kDualEncoderDataset` accept `subset_split`; `get_dataloader` and `get_dataloader_dual_encoder` pass it when using parquet. See `verify_split.py`, `docs/verify_split_result.md`.
+
 ### Split disjointness sanity check
 
-**Purpose:** Verify that `nlphuji/flickr30k` uses Karpathy-style splits so `split="train"` does not overlap with the 1k test benchmark.
+**Purpose:** Verify that `nlphuji/flickr30k` uses Karpathy-style splits so train does not overlap with the 1k test benchmark.
+
+**Parquet caveat:** The nlphuji/flickr30k parquet revision exposes only one HF split (`"test"`). The real train/val/test division is in an internal `split` column. We load HF `"test"` and filter by `row["split"] == "train"` (or `"val"`, `"test"`) for the desired subset. See `verify_split.py` and `docs/verify_split_result.md`.
 
 **What to check:**
-- Load `nlphuji/flickr30k` with `split="train"` and `split="test"`.
+- Load `nlphuji/flickr30k` parquet (HF split `"test"`), filter by internal `split` column to get train and test subsets.
 - Load `nlphuji/flickr_1k_test_image_text_retrieval`.
-- Extract a stable identifier per image (e.g. `image` column hash, or `id`/`filename` if present).
-- Assert: `train_ids ∩ test_ids = ∅` and `test_ids_30k == test_ids_1k` (or equivalent).
+- Extract a stable identifier per image (e.g. `image` column hash).
+- Assert: `train_ids ∩ test_ids = ∅` and `test_ids_30k == test_ids_1k`.
 
-**When to run:** Before Stage A1 (or any training). Add to data sanity check or as a standalone script.
+**When to run:** Before Stage A1 (or any training). Run `python -m src.data --check-splits`.
 
-**If verification fails:** Do not use `split="train"` blindly; consider using Karpathy split files directly or a different dataset version.
+**If verification fails:** Do not train; fix dataset or split configuration.
 
 ---
 
@@ -253,7 +257,10 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
 - [x] **3. Config**
    - Add training settings to `custom_dual_encoder.yaml` (epochs, lr, output-dir).
 
-- [ ] **4. Run Stage B1**
+- [x] **4. Parquet filter (data pipeline)**
+   - nlphuji/flickr30k parquet exposes only HF split "test"; filter by internal `split` column for train/val/test. Updated `check_split_disjointness`, dataset classes, and dataloaders. See `docs/verify_split_result.md`.
+
+- [ ] **5. Run Stage B1**
    - Train projections; run eval on best checkpoint; record metrics in README.
 
 ### Stage B2 — Unfreeze part of encoder

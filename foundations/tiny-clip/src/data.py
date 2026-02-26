@@ -118,15 +118,28 @@ class Flickr30kDualEncoderDataset(Dataset):
 
 
 def get_dataloader_dual_encoder(config, tokenizer, image_transform, split=None, shuffle=False, for_eval=False):
-    """Build DataLoader for custom dual encoder."""
+    """Build DataLoader for custom dual encoder.
+    For nlphuji/flickr30k parquet: loads HF split 'test', filters by internal split (train/val/test).
+    """
     batch_size = config.get("batch_size", 32)
     if for_eval and config.get("eval_dataset_name"):
-        dataset_name, split = config["eval_dataset_name"], split or config.get("eval_split", "test")
+        dataset_name = config["eval_dataset_name"]
+        split = split or config.get("eval_split", "test")
         revision = config.get("eval_revision", "refs/convert/parquet")
+        subset_split = None
     else:
-        dataset_name, revision = config["dataset_name"], config.get("revision", "refs/convert/parquet")
-        split = split or config.get("train_split", config.get("split", "train"))
-    ds = Flickr30kDualEncoderDataset(dataset_name, split, tokenizer, image_transform, config.get("text_max_length", 128), revision)
+        dataset_name = config["dataset_name"]
+        revision = config.get("revision", "refs/convert/parquet")
+        if _use_parquet_filter(dataset_name, revision):
+            split = "test"  # HF parquet only has "test"
+            subset_split = config.get("train_split", "train")
+        else:
+            split = split or config.get("train_split", config.get("split", "train"))
+            subset_split = None
+    ds = Flickr30kDualEncoderDataset(
+        dataset_name, split, tokenizer, image_transform,
+        config.get("text_max_length", 128), revision, subset_split=subset_split,
+    )
     return DataLoader(ds, batch_size=batch_size, shuffle=shuffle, num_workers=0, collate_fn=_collate_fn_track_b)
 
 
@@ -188,10 +201,19 @@ def check_split_disjointness(
 ) -> bool:
     """
     Verify that train and test splits are disjoint, and that 30k test == 1k benchmark.
+    For nlphuji/flickr30k parquet: HF only exposes split='test'; we filter by internal 'split' column.
     Returns True if checks pass; raises AssertionError otherwise.
     """
-    train_ds = load_dataset(dataset_name, split="train", revision=revision)
-    test_30k_ds = load_dataset(dataset_name, split="test", revision=revision)
+    # Parquet nlphuji/flickr30k: HF has only "test" split; filter by internal split column
+    ds_all = load_dataset(dataset_name, split="test", revision=revision)
+    if "split" not in ds_all.column_names:
+        raise ValueError(
+            f"Dataset {dataset_name} has no 'split' column. "
+            "Cannot verify disjointness. Use a dataset with Karpathy splits (train/val/test)."
+        )
+    train_ds = ds_all.filter(lambda x: x["split"] == "train")
+    test_30k_ds = ds_all.filter(lambda x: x["split"] == "test")
+
     rev_1k = eval_revision or revision
     test_1k_ds = load_dataset(eval_dataset_name, split="test", revision=rev_1k)
 
@@ -281,20 +303,13 @@ if __name__ == "__main__":
             revision=config.get("revision", "refs/convert/parquet"),
             eval_revision=config.get("eval_revision"),
         )
-        print("Verified: nlphuji/flickr30k uses Karpathy splits; train and 1k test are disjoint.")
         print("Split disjointness check passed.\n")
 
-    # 1. Flickr30k (full dataset, split from config)
-    dataset_30k = Flickr30kCLIPDataset(
-        config["dataset_name"],
-        config["split"],
-        processor,
-        revision=config.get("revision", "refs/convert/parquet"),
-    )
+    # 1. Flickr30k (training split for parquet; uses internal split column)
     loader_30k = get_dataloader(config, processor, shuffle=False, for_eval=False)
     _run_sanity_check(
-        dataset_30k, loader_30k,
-        "Flickr30k (dataset_name, split)",
+        loader_30k.dataset, loader_30k,
+        "Flickr30k (train split for parquet)",
         "sanity_check_samples.png",
         _root,
     )
