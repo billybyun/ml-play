@@ -16,6 +16,16 @@ From this directory:
 pip install -r requirements.txt
 ```
 
+## Commands quick reference
+
+| Stage | Command |
+|-------|---------|
+| Split check | `python -m src.data --check-splits` |
+| B0 eval | `python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-type dual_encoder --output metrics_b0.json` |
+| B1 train | `python -m src.train --config configs/custom_dual_encoder.yaml` |
+| B1 eval | `python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-type dual_encoder --checkpoint checkpoints/dual_encoder/final.pt --output metrics_b1.json` |
+| CLIP eval (A0) | `python -m src.eval_retrieval --config configs/flickr30k.yaml --output metrics.json` |
+
 ## Data sanity check
 
 Load the dataset (Flickr30k via Hugging Face, Parquet revision), print batch shapes, and generate the sample image above:
@@ -104,6 +114,7 @@ Optional: save metrics to JSON with `--output metrics.json`.
 | Training checkpoint | `checkpoints/dual_encoder/final.pt` |
 | Training loss log | `checkpoints/dual_encoder/train_log.json` |
 | CLIP eval metrics | `metrics.json` |
+| B0 eval metrics | `metrics_b0.json` |
 | B1 eval metrics | `metrics_b1.json` |
 
 ## Custom images demo (Step 6)
