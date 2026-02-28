@@ -260,7 +260,7 @@ After this, Stage A0 is done. A1 will add resetting projections and training.
 - [x] **4. Parquet filter (data pipeline)**
    - nlphuji/flickr30k parquet exposes only HF split "test"; filter by internal `split` column for train/val/test. Updated `check_split_disjointness`, dataset classes, and dataloaders. See `docs/verify_split_result.md`.
 
-- [ ] **5. Run Stage B1**
+- [x] **5. Run Stage B1**
    - Train projections; run eval on best checkpoint; record metrics in README.
 
 ### Stage B2 — Unfreeze part of encoder

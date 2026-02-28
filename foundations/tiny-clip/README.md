@@ -53,10 +53,10 @@ python -m src.train --config configs/custom_dual_encoder.yaml
 
 Optional: `--epochs 5 --lr 1e-4 --output-dir checkpoints/dual_encoder`. Checkpoint saved to `{output-dir}/final.pt`.
 
-Eval with trained weights:
+Eval with trained weights (saves to `metrics_b1.json` with `--output`):
 
 ```bash
-python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-type dual_encoder --checkpoint checkpoints/dual_encoder/final.pt
+python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-type dual_encoder --checkpoint checkpoints/dual_encoder/final.pt --output metrics_b1.json
 ```
 
 ## Zero-shot retrieval eval
@@ -93,11 +93,18 @@ Optional: save metrics to JSON with `--output metrics.json`.
 
 | Metric | i2t | t2i |
 |--------|-----|-----|
-| R@1 | — | — |
-| R@5 | — | — |
-| R@10 | — | — |
+| R@1 | 34.3% | 23.9% |
+| R@5 | 66.5% | 54.2% |
+| R@10 | 78.1% | 66.9% |
 
-*Run `python -m src.train` then `eval_retrieval --checkpoint checkpoints/dual_encoder/final.pt --output metrics.json` and paste results here.*
+## Results saved
+
+| Output | Path |
+|--------|------|
+| Training checkpoint | `checkpoints/dual_encoder/final.pt` |
+| Training loss log | `checkpoints/dual_encoder/train_log.json` |
+| CLIP eval metrics | `metrics.json` |
+| B1 eval metrics | `metrics_b1.json` |
 
 ## Custom images demo (Step 6)
 
