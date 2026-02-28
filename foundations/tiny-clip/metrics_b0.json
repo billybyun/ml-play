@@ -1,0 +1,11 @@
+{
+  "i2t_R@1": 0.001,
+  "i2t_R@5": 0.007,
+  "i2t_R@10": 0.01,
+  "t2i_R@1": 0.0008,
+  "t2i_R@5": 0.0032,
+  "t2i_R@10": 0.0082,
+  "n_images": 1000,
+  "split": "1k test (standard benchmark)",
+  "model": "Dual encoder (ViT + DistilBERT, random projections)"
+}
