@@ -28,6 +28,7 @@ We use **two different pretrained encoders** that were never trained together:
 | **Text pooling** | Mean over non-padding tokens | DistilBERT has no EOS token; mean pooling is a common fallback. |
 | **Normalization** | L2 on embeddings | Same as CLIP; enables cosine similarity via dot product. |
 | **Temperature** | Learnable scalar | Same as CLIP; initialized to 0.07. |
+| **Batch size** | 32 | In-batch negatives for InfoNCE (31 per positive); standard choice. |
 
 Training: 5 epochs, InfoNCE loss, encoders frozen. See [src/models.py](src/models.py) lines 39–43 for projection definitions.
 
@@ -112,6 +113,8 @@ python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-t
 
 Optional: save metrics to JSON with `--output metrics.json`.
 
+**Eval setup (1k test):** Pool sizes: n_images=1000, n_caps=5000. Random baseline t2i R@1 = 1/n_images = 0.1%.
+
 **Baseline (zero-shot CLIP ViT-B/32, Flickr30k 1k test):**
 
 | Metric | i2t | t2i |
@@ -150,4 +153,3 @@ Optional: save metrics to JSON with `--output metrics.json`.
 
 Put 1–3 images in **`demos/custom_images/`** (jpg/png). For the basic demo you only need images—the script retrieves top-k captions from the Flickr30k 1k set. Optionally add `captions.txt` (one caption per line) to test similarity to your own text. See [demos/custom_images/README.md](demos/custom_images/README.md) for details.
 
-What’s next: see [plan § Stage A0 implementation steps](../../docs/plans/tiny-clip.md) (checkboxes).
