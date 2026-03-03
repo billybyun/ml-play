@@ -2,6 +2,16 @@
 
 A playground for ML experiments and reference implementations.
 
+## Structure
+
+- **[foundations/](foundations/)** — Model architectures and small pipelines (ViT, Conformer, Perceiver, etc.).
+  - **[tiny-clip](foundations/tiny-clip/)** — CLIP-style contrastive learning: modify pretrained CLIP (Track A) or build from components (Track B). Data sanity check, zero-shot eval, and retrieval on Flickr30k.
+  - **[tiny_transformer](foundations/tiny_transformer/)** — LLM representation (small transformer reference).
+  - **VLA** ([foundations/vla/](foundations/vla/)) — Vision–language–action (to be added).
+- **[timeseries/](timeseries/)** — Time-series tools and notebooks (e.g. HFA envelope methods, ECoG).
+- **[docs/](docs/)** — Project plans in [docs/plans/](docs/plans/) (e.g. [tiny-clip](docs/plans/tiny-clip.md)).
+- **[notes/](notes/)** — Annotated references and scratch.
+
 ## Example: Tiny-CLIP custom images demo
 
 Run pretrained CLIP on your own images — retrieve top-5 captions from the Flickr30k benchmark:
@@ -21,16 +31,6 @@ We compose a pretrained ViT + pretrained DistilBERT, add projection heads, and t
 | **B0** (random projections) | 0.1% | 0.08% | Near random |
 
 Flickr30k 1k test set. See [tiny-clip](foundations/tiny-clip/) for details.
-
-## Structure
-
-- **[foundations/](foundations/)** — Model architectures and small pipelines (ViT, Conformer, Perceiver, etc.).
-  - **[tiny-clip](foundations/tiny-clip/)** — CLIP-style contrastive learning: modify pretrained CLIP (Track A) or build from components (Track B). Data sanity check, zero-shot eval, and retrieval on Flickr30k.
-  - **[tiny_transformer](foundations/tiny_transformer/)** — LLM representation (small transformer reference).
-  - **VLA** ([foundations/vla/](foundations/vla/)) — Vision–language–action (to be added).
-- **[timeseries/](timeseries/)** — Time-series tools and notebooks (e.g. HFA envelope methods, ECoG).
-- **[docs/](docs/)** — Project plans in [docs/plans/](docs/plans/) (e.g. [tiny-clip](docs/plans/tiny-clip.md)).
-- **[notes/](notes/)** — Annotated references and scratch.
 
 ## Quick links
 
