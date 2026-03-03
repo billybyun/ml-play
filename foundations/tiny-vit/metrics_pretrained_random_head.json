@@ -1,0 +1,5 @@
+{
+  "note": "B0 baseline: random head, no fine-tuning or linear probe",
+  "top1": 7.46,
+  "top5": 38.59
+}
