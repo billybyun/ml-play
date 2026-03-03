@@ -17,7 +17,8 @@ os.chdir(ROOT)
 CUSTOM_IMAGES_DIR = os.path.join(ROOT, "demos", "custom_images")
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".JPG", ".JPEG", ".PNG", ".WEBP"}
 TOP_K = 5
-OUTPUT_FIG = os.path.join(ROOT, "demos", "custom_images", "demo_results.png")
+OUTPUT_DIR = os.path.join(ROOT, "demos", "output")
+OUTPUT_FIG = os.path.join(OUTPUT_DIR, "demo_results.png")
 
 
 def find_custom_images(dirpath: str) -> list[tuple[str, str]]:
@@ -144,6 +145,7 @@ def main():
         axes[j].axis("off")
 
     plt.tight_layout()
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     plt.savefig(OUTPUT_FIG, dpi=120, bbox_inches="tight")
     print(f"Saved: {OUTPUT_FIG}")
     return 0

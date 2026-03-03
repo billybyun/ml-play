@@ -164,10 +164,11 @@ Do in order so each step can be checked and committed.
    - Run the eval script (no training). Record baseline metrics (e.g. in a small table or JSON).
    - Confirm numbers are strong (not random), so the pipeline is correct.
 
-- [ ] **6. Demo: zero-shot on custom images**
+- [x] **6. Demo: zero-shot on custom images**
    - Run pretrained CLIP on 1–3 **images the model has never seen** (e.g. profile picture, other sharable personal photos). No training or fine-tuning on these images.
    - For each image: show **top-k retrieved captions** (from the eval set) or similarity to a few hand-written captions. Save figure(s).
    - Add a **Results** or **Demo** section in `foundations/tiny-clip/README.md` that includes these examples (image + retrieved captions). Use only images you are comfortable sharing in the repo.
+   - Output saved to `demos/output/demo_results.png` (separate from input folder).
 
    - [ ] **6b. Optional personal mini-retrieval demo** (with self-written ground truth)
      - Add 1–10 personal photos (only if comfortable sharing; otherwise keep local only).

@@ -55,7 +55,7 @@ pip install -r requirements.txt
 | B1 train | `python -m src.train --config configs/custom_dual_encoder.yaml` |
 | B1 eval | `python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-type dual_encoder --checkpoint checkpoints/dual_encoder/final.pt --output metrics_b1.json` |
 | CLIP eval (A0) | `python -m src.eval_retrieval --config configs/flickr30k.yaml --output metrics.json` |
-| Custom images demo (6A) | `python demos/demo_custom_images.py` (add `--debug` for discovery diagnostics) |
+| Custom images demo (6A) | `python demos/demo_custom_images.py` (output: `demos/output/demo_results.png`; add `--debug` for discovery diagnostics) |
 
 ## Data sanity check
 
@@ -149,6 +149,7 @@ Optional: save metrics to JSON with `--output metrics.json`.
 | CLIP eval metrics | `metrics.json` |
 | B0 eval metrics | `metrics_b0.json` |
 | B1 eval metrics | `metrics_b1.json` |
+| Custom images demo output | `demos/output/demo_results.png` |
 
 ## Custom images demo (Step 6A)
 
@@ -161,13 +162,13 @@ Run pretrained CLIP on your own images—retrieve top-5 captions from the Flickr
 python demos/demo_custom_images.py
 ```
 
-3. Output: `demos/custom_images/demo_results.png` — each image with its top-5 retrieved captions.
+3. Output: `demos/output/demo_results.png` — each image with its top-5 retrieved captions (saved outside the input folder so it is not processed as input on the next run).
 
-**Demo results:** The script saves `demos/custom_images/demo_results.png` — each custom image with its top-5 retrieved captions. Add 1–3 images to `demos/custom_images/`, run the script, then the figure will appear. You can add it to the README:
+**Demo results (Step 6A):**
 
-```markdown
-![Custom images demo](demos/custom_images/demo_results.png)
-```
+![Custom images demo](demos/output/demo_results.png)
+
+Add 1–3 images to `demos/custom_images/`, run the script, then the figure appears in `demos/output/`.
 
 For Option B (test similarity to hand-written captions) or 6b (personal mini-retrieval), see [demos/custom_images/README.md](demos/custom_images/README.md).
 
