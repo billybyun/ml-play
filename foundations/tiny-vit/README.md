@@ -29,8 +29,15 @@ foundations/tiny-vit/
 pip install -r requirements.txt
 ```
 
+## Commands
+
+| Stage | Command |
+|-------|---------|
+| Pretrained ViT eval | `python -m src.eval --config configs/cifar10.yaml` |
+| Save metrics | `python -m src.eval --config configs/cifar10.yaml --output metrics_pretrained.json` |
+
 ## Status
 
-- [ ] Scaffold (this)
-- [ ] Pretrained ViT eval on CIFAR-10
+- [x] Scaffold
+- [x] Pretrained ViT eval on CIFAR-10
 - [ ] Small ViT from scratch

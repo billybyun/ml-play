@@ -9,10 +9,10 @@ Explore Vision Transformers (ViT) in two phases:
 
 ## Phase 1: Pretrained ViT
 
-- [ ] Load CIFAR-10, resize to 224x224
-- [ ] Load pretrained ViT-B/16 from timm, replace head for 10 classes
-- [ ] Eval zero-shot (or minimal fine-tuning)
-- [ ] Record accuracy
+- [x] Load CIFAR-10, resize to 224x224 (ImageNet normalization for pretrained)
+- [x] Load pretrained ViT-B/16 from timm, replace head for 10 classes
+- [x] Eval zero-shot: `python -m src.eval --config configs/cifar10.yaml`
+- [ ] Record accuracy (run eval and add to README)
 
 ## Phase 2: Small ViT from scratch
 
