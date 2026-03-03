@@ -33,8 +33,9 @@ pip install -r requirements.txt
 
 | Stage | Command |
 |-------|---------|
-| Pretrained ViT eval | `python -m src.eval --config configs/cifar10.yaml` |
-| Save metrics | `python -m src.eval --config configs/cifar10.yaml --output metrics_pretrained.json` |
+| Print ViT shapes | `python -m src.eval --config configs/cifar10.yaml --print-shapes` |
+| B0 eval (random head, no training) | `python -m src.eval --config configs/cifar10.yaml` |
+| Save B0 metrics | `python -m src.eval --config configs/cifar10.yaml --output metrics_b0_random_head.json` |
 
 ## Status
 

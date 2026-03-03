@@ -43,6 +43,7 @@ def main():
     parser.add_argument("--config", default="configs/cifar10.yaml", help="Config path")
     parser.add_argument("--checkpoint", default=None, help="Checkpoint path (optional; uses pretrained if not set)")
     parser.add_argument("--output", default=None, help="Save metrics to JSON")
+    parser.add_argument("--print-shapes", action="store_true", help="Print input/output dimensions and exit")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -53,6 +54,21 @@ def main():
         ckpt = torch.load(args.checkpoint, map_location=device)
         model.load_state_dict(ckpt.get("model", ckpt), strict=False)
 
+    if args.print_shapes:
+        dataloader = get_dataloader(config, split="test")
+        images, labels = next(iter(dataloader))
+        images = images.to(device)
+        with torch.no_grad():
+            logits = model(images)
+            print("--- ViT shape check ---")
+            print(f"  Input (images):  {tuple(images.shape)}")
+            print(f"  Output (logits): {tuple(logits.shape)}")
+            if hasattr(model, "forward_features"):
+                features = model.forward_features(images)
+                print(f"  Backbone (CLS): {tuple(features.shape)}  <- 768-d per sample before head")
+            print("---")
+        return 0
+
     dataloader = get_dataloader(config, split="test")
 
     acc = evaluate(model, dataloader, device)
@@ -62,8 +78,14 @@ def main():
 
     if args.output:
         import json
+        # Include metadata for clarity (B0 = random head, no training)
+        result = {
+            "note": "B0 baseline: random head, no fine-tuning or linear probe",
+            "top1": acc[1],
+            "top5": acc[5],
+        }
         with open(args.output, "w") as f:
-            json.dump(acc, f, indent=2)
+            json.dump(result, f, indent=2)
         print(f"Saved: {args.output}")
 
     return 0
