@@ -1,25 +1,19 @@
 #!/usr/bin/env python3
 """
 Step 6A: Run pretrained CLIP on custom images — retrieve top-k captions from Flickr30k 1k test set.
-Usage (from foundations/tiny-clip): python demos/demo_custom_images.py
+Usage (from foundations/tiny-clip): python demos/demo_custom_images.py [--debug]
 """
+import argparse
 import os
 import sys
 
-import matplotlib.pyplot as plt
-import torch
-from PIL import Image
-from transformers import CLIPModel, CLIPProcessor
-
-# Add project root
+# Add project root (needed for both debug and main)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 os.chdir(ROOT)
 
-from datasets import load_dataset
-
-# Config
+# Config (no heavy imports yet — debug mode uses only stdlib)
 CUSTOM_IMAGES_DIR = os.path.join(ROOT, "demos", "custom_images")
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".JPG", ".JPEG", ".PNG", ".WEBP"}
 TOP_K = 5
@@ -40,8 +34,30 @@ def find_custom_images(dirpath: str) -> list[tuple[str, str]]:
     return sorted(pairs, key=lambda x: x[1])
 
 
+def debug_discovery(dirpath: str) -> None:
+    """Print diagnostic info for image discovery (used with --debug or when no images found)."""
+    print("--- Image discovery debug ---")
+    print(f"  ROOT (script parent): {ROOT}")
+    print(f"  CUSTOM_IMAGES_DIR:    {dirpath}")
+    print(f"  dir exists:           {os.path.exists(dirpath)}")
+    print(f"  dir isdir:            {os.path.isdir(dirpath)}")
+    if os.path.isdir(dirpath):
+        all_files = os.listdir(dirpath)
+        print(f"  all files ({len(all_files)}): {sorted(all_files)}")
+        for f in sorted(all_files):
+            ext = os.path.splitext(f)[1]
+            full = os.path.join(dirpath, f)
+            is_img = ext in IMAGE_EXTENSIONS
+            is_file = os.path.isfile(full)
+            status = "OK" if (is_img and is_file) else ("skip: not image" if not is_img else "skip: not file")
+            print(f"    {f}: ext={ext!r} -> {status}")
+    print("  Supported extensions:", sorted(IMAGE_EXTENSIONS))
+    print("---")
+
+
 def load_caption_pool(revision: str = "refs/convert/parquet") -> list[str]:
     """Load all captions from Flickr30k 1k test set (5000 captions)."""
+    from datasets import load_dataset
     ds = load_dataset("nlphuji/flickr_1k_test_image_text_retrieval", split="test", revision=revision)
     captions = []
     for row in ds:
@@ -53,9 +69,24 @@ def load_caption_pool(revision: str = "refs/convert/parquet") -> list[str]:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Run CLIP on custom images, retrieve top-k captions.")
+    parser.add_argument("--debug", action="store_true", help="Print image discovery diagnostics and exit.")
+    args = parser.parse_args()
+
+    if args.debug:
+        debug_discovery(CUSTOM_IMAGES_DIR)
+        return 0
+
+    # Heavy imports only when not in debug mode
+    import matplotlib.pyplot as plt
+    import torch
+    from PIL import Image
+    from transformers import CLIPModel, CLIPProcessor
+
     images = find_custom_images(CUSTOM_IMAGES_DIR)
     if not images:
         print(f"No images found in {CUSTOM_IMAGES_DIR}")
+        debug_discovery(CUSTOM_IMAGES_DIR)
         print("Add 1–3 jpg/png images, then run again.")
         print("Example: photo1.jpg, photo2.png")
         return 1

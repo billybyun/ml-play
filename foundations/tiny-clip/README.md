@@ -55,7 +55,7 @@ pip install -r requirements.txt
 | B1 train | `python -m src.train --config configs/custom_dual_encoder.yaml` |
 | B1 eval | `python -m src.eval_retrieval --config configs/custom_dual_encoder.yaml --model-type dual_encoder --checkpoint checkpoints/dual_encoder/final.pt --output metrics_b1.json` |
 | CLIP eval (A0) | `python -m src.eval_retrieval --config configs/flickr30k.yaml --output metrics.json` |
-| Custom images demo (6A) | `python demos/demo_custom_images.py` |
+| Custom images demo (6A) | `python demos/demo_custom_images.py` (add `--debug` for discovery diagnostics) |
 
 ## Data sanity check
 
