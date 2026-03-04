@@ -34,11 +34,20 @@ pip install -r requirements.txt
 | Stage | Command |
 |-------|---------|
 | Print ViT shapes | `python -m src.eval --config configs/cifar10.yaml --print-shapes` |
-| B0 eval (random head, no training) | `python -m src.eval --config configs/cifar10.yaml` |
-| Save B0 metrics | `python -m src.eval --config configs/cifar10.yaml --output metrics_b0_random_head.json` |
+| Random head eval (no training) | `python -m src.eval --config configs/cifar10.yaml --output metrics_random_head.json` |
+| **Linear probe train** | `python -m src.train --config configs/cifar10.yaml` |
+| **Linear probe eval** | `python -m src.eval --config configs/cifar10.yaml --checkpoint checkpoints/linear_probe/final.pt --output metrics_linear_probe.json` |
+
+## Results (CIFAR-10 test)
+
+| Model | Top-1 | Top-5 | Notes |
+|-------|-------|-------|-------|
+| Random head | ~10% | ~40% | No training; baseline |
+| Linear probe | — | — | Run train + eval to fill |
 
 ## Status
 
 - [x] Scaffold
-- [x] Pretrained ViT eval on CIFAR-10
+- [x] Pretrained ViT eval (random head)
+- [x] Linear probe training
 - [ ] Small ViT from scratch

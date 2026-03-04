@@ -17,4 +17,13 @@ def create_vit(config: dict) -> nn.Module:
     return model
 
 
+def freeze_backbone_for_linear_probe(model: nn.Module) -> None:
+    """Freeze all parameters except the classification head (for linear probe)."""
+    for name, param in model.named_parameters():
+        if "head" in name:
+            param.requires_grad = True
+        else:
+            param.requires_grad = False
+
+
 # TODO: Small ViT from scratch (minimal patch size, depth, heads)

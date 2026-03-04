@@ -8,3 +8,8 @@ normalization: imagenet  # imagenet for pretrained ViT; cifar10 for training fro
 # Model (timm)
 model_name: vit_base_patch16_224
 pretrained: true
+
+# Linear probe (optional; overridden by CLI)
+epochs: 10
+lr: 0.001
+output_dir: checkpoints/linear_probe

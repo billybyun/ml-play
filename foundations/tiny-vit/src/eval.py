@@ -48,6 +48,7 @@ def main():
 
     config = load_config(args.config)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
 
     model = create_vit(config).to(device)
     if args.checkpoint:
@@ -78,12 +79,8 @@ def main():
 
     if args.output:
         import json
-        # Include metadata for clarity (B0 = random head, no training)
-        result = {
-            "note": "B0 baseline: random head, no fine-tuning or linear probe",
-            "top1": acc[1],
-            "top5": acc[5],
-        }
+        note = "linear probe (trained head)" if args.checkpoint else "random head, no training"
+        result = {"note": note, "device": str(device), "top1": acc[1], "top5": acc[5]}
         with open(args.output, "w") as f:
             json.dump(result, f, indent=2)
         print(f"Saved: {args.output}")
