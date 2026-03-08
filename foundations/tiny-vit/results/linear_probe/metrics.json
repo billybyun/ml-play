@@ -1,0 +1,6 @@
+{
+  "note": "linear probe (trained head)",
+  "device": "cuda",
+  "top1": 94.35,
+  "top5": 99.85
+}
