@@ -9,7 +9,7 @@ A playground for ML experiments and reference implementations.
   - **[tiny-vit](foundations/tiny-vit/)** — ViT on CIFAR-10: linear probe (94.4% top-1) and tiny ViT from scratch (68.3% top-1).
   - **[tiny_transformer](foundations/tiny_transformer/)** — LLM representation (small transformer reference).
   - **BLIP2** (to be added) — Q-Former bridging frozen image encoder + frozen LLM.
-  - **LLaVA** (to be added) — Simple projection + LLM for vision–language.
+  - **[tiny-llava](foundations/tiny-llava/)** — LLaVA-style VLM: frozen CLIP + projection + LLM. (Scaffold)
   - **SwinT, ViViT, Perceiver, Conformer, S4/Mamba** (to be added) — Vision, video, and SSM architectures.
   - **VLA** (to be added) — Vision–language–action for robotics.
 - **[timeseries/](timeseries/)** — Time-series tools and notebooks (e.g. HFA envelope methods, ECoG).
@@ -50,5 +50,5 @@ See [tiny-vit](foundations/tiny-vit/) for setup and commands.
 
 ## Quick links
 
-- [Tiny-CLIP](foundations/tiny-clip/) · [Tiny-ViT](foundations/tiny-vit/)
+- [Tiny-CLIP](foundations/tiny-clip/) · [Tiny-ViT](foundations/tiny-vit/) · [tiny-llava](foundations/tiny-llava/)
 - [Repo roadmap](docs/plan.md)

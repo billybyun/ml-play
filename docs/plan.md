@@ -25,7 +25,7 @@ A living plan for ML explorations in this repo. Same pattern as tiny-clip: small
 | **tiny-clip** | CLIP-style dual encoder, B0/B1 ablations | Done |
 | **BLIP2** | Q-Former bridging frozen image encoder + frozen LLM | Planned |
 | **Qwen-VL** | Qwen vision–language model | Planned |
-| **LLaVA** | Simple projection + LLM for VLM | Planned |
+| **tiny-llava** | LLaVA-style: frozen CLIP + projection + LLM | Scaffold |
 | **VLA** | Vision–language–action for robotics | Planned |
 
 ---
