@@ -6,7 +6,7 @@ A playground for ML experiments and reference implementations.
 
 - **[foundations/](foundations/)** — Model architectures and small pipelines (ViT, Conformer, Perceiver, etc.).
   - **[tiny-clip](foundations/tiny-clip/)** — CLIP-style contrastive learning: modify pretrained CLIP (Track A) or build from components (Track B). Data sanity check, zero-shot eval, and retrieval on Flickr30k.
-  - **[tiny-vit](foundations/tiny-vit/)** — ViT: pretrained first, then small from scratch (CIFAR-10). Scaffold.
+  - **[tiny-vit](foundations/tiny-vit/)** — ViT on CIFAR-10: linear probe 94.4% top-1. [Samples](foundations/tiny-vit/results/linear_probe/samples.png) · [Metrics](foundations/tiny-vit/results/linear_probe/metrics.json)
   - **[tiny_transformer](foundations/tiny_transformer/)** — LLM representation (small transformer reference).
   - **BLIP2** (to be added) — Q-Former bridging frozen image encoder + frozen LLM.
   - **LLaVA** (to be added) — Simple projection + LLM for vision–language.
@@ -38,7 +38,5 @@ Flickr30k 1k test set. See [tiny-clip](foundations/tiny-clip/) for details.
 
 ## Quick links
 
-- [Tiny-CLIP setup, data sanity check, and sample results](foundations/tiny-clip/)
-- [Tiny-ViT scaffold](foundations/tiny-vit/)
-- [Project plan (Tiny-CLIP tracks and stages)](docs/plans/tiny-clip.md)
-- [Repo roadmap (vision, VLM, distillation, etc.)](docs/plan.md)
+- [Tiny-CLIP](foundations/tiny-clip/) · [Tiny-ViT](foundations/tiny-vit/)
+- [Repo roadmap](docs/plan.md)

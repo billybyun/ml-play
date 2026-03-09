@@ -12,7 +12,7 @@ os.chdir(ROOT)
 import torch
 
 from src.data import get_dataloader
-from src.models import create_vit
+from src.models import create_vit, create_small_vit
 from src.utils import load_config
 
 
@@ -40,20 +40,27 @@ def evaluate(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, de
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate ViT on CIFAR-10.")
-    parser.add_argument("--config", default="configs/cifar10.yaml", help="Config path")
+    parser.add_argument("--config", default=None, help="Config path (default: from checkpoint or cifar10.yaml)")
     parser.add_argument("--checkpoint", default=None, help="Checkpoint path (optional; uses pretrained if not set)")
     parser.add_argument("--output", default=None, help="Save metrics to JSON")
     parser.add_argument("--print-shapes", action="store_true", help="Print input/output dimensions and exit")
     args = parser.parse_args()
 
-    config = load_config(args.config)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    model = create_vit(config).to(device)
     if args.checkpoint:
         ckpt = torch.load(args.checkpoint, map_location=device)
+        config = ckpt.get("config") or load_config(args.config or "configs/cifar10.yaml")
+        model_type = config.get("model_type") or ("small_vit" if ("patch_size" in config or "embed_dim" in config) else "timm")
+        if model_type == "small_vit":
+            model = create_small_vit(config).to(device)
+        else:
+            model = create_vit(config).to(device)
         model.load_state_dict(ckpt.get("model", ckpt), strict=False)
+    else:
+        config = load_config(args.config or "configs/cifar10.yaml")
+        model = create_vit(config).to(device)
 
     if args.print_shapes:
         dataloader = get_dataloader(config, split="test")
@@ -79,7 +86,12 @@ def main():
 
     if args.output:
         import json
-        note = "linear probe (trained head)" if args.checkpoint else "random head, no training"
+        if not args.checkpoint:
+            note = "random head, no training"
+        elif config.get("model_type") == "small_vit":
+            note = "small ViT from scratch"
+        else:
+            note = "linear probe (trained head)"
         result = {"note": note, "device": str(device), "top1": acc[1], "top5": acc[5]}
         with open(args.output, "w") as f:
             json.dump(result, f, indent=2)

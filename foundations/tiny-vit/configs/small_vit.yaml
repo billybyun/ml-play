@@ -1,0 +1,17 @@
+# Small ViT from scratch on CIFAR-10 (32x32 native)
+dataset_name: cifar10
+batch_size: 64
+image_size: 32
+num_classes: 10
+normalization: cifar10
+
+# Small ViT architecture
+patch_size: 4
+embed_dim: 256
+depth: 4
+num_heads: 8
+dropout: 0.1
+
+# Training
+epochs: 50
+lr: 0.0003

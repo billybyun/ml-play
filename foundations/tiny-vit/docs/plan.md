@@ -17,6 +17,6 @@ Explore Vision Transformers (ViT) in two phases:
 
 ## Phase 2: Small ViT from scratch
 
-- [ ] Define minimal ViT (e.g. 4 layers, 4 heads, patch 16)
-- [ ] Train on CIFAR-10 from random init
-- [ ] Compare to pretrained baseline
+- [x] Define minimal ViT (4 layers, 8 heads, patch 4, 32x32)
+- [x] Train on CIFAR-10 from random init: `python -m src.train --model-type small_vit`
+- [ ] Run train + eval, add metrics to README

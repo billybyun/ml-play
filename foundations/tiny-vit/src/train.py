@@ -1,4 +1,4 @@
-"""Training loop for tiny-vit: linear probe (freeze backbone, train head only)."""
+"""Training loop for tiny-vit: linear probe or small ViT from scratch."""
 import argparse
 import json
 import os
@@ -14,25 +14,38 @@ import torch
 import torch.nn.functional as F
 
 from src.data import get_dataloader
-from src.models import create_vit, freeze_backbone_for_linear_probe
+from src.models import create_vit, create_small_vit, freeze_backbone_for_linear_probe
 from src.utils import load_config
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train linear probe on ViT (freeze backbone, train head only).")
-    parser.add_argument("--config", default="configs/cifar10.yaml", help="Config path")
-    parser.add_argument("--epochs", type=int, default=10, help="Number of epochs")
-    parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")
-    parser.add_argument("--output-dir", default="checkpoints/linear_probe", help="Checkpoint directory")
+    parser = argparse.ArgumentParser(description="Train ViT: linear probe or small ViT from scratch.")
+    parser.add_argument("--model-type", choices=["linear_probe", "small_vit"], default="linear_probe")
+    parser.add_argument("--config", default=None, help="Config path (default: cifar10.yaml or small_vit.yaml)")
+    parser.add_argument("--epochs", type=int, default=None, help="Override epochs from config")
+    parser.add_argument("--lr", type=float, default=None, help="Override learning rate from config")
+    parser.add_argument("--output-dir", default=None, help="Checkpoint directory")
     args = parser.parse_args()
 
+    if args.config is None:
+        args.config = "configs/small_vit.yaml" if args.model_type == "small_vit" else "configs/cifar10.yaml"
+    if args.output_dir is None:
+        args.output_dir = "checkpoints/small_vit" if args.model_type == "small_vit" else "checkpoints/linear_probe"
+
     config = load_config(args.config)
+    epochs = args.epochs if args.epochs is not None else config.get("epochs", 10)
+    lr = args.lr if args.lr is not None else config.get("lr", 1e-3)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
+    print(f"Model type: {args.model_type}")
 
     torch.manual_seed(42)
-    model = create_vit(config).to(device)
-    freeze_backbone_for_linear_probe(model)
+    if args.model_type == "small_vit":
+        model = create_small_vit(config).to(device)
+    else:
+        model = create_vit(config).to(device)
+        freeze_backbone_for_linear_probe(model)
 
     train_loader = get_dataloader(config, split="train")
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
@@ -40,7 +53,7 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     train_log = []
 
-    for epoch in range(args.epochs):
+    for epoch in range(epochs):
         model.train()
         total_loss = 0.0
         correct = 0
@@ -62,14 +75,15 @@ def main():
         avg_loss = total_loss / len(train_loader)
         train_acc = 100.0 * correct / total
         train_log.append({"epoch": epoch + 1, "loss": avg_loss, "train_acc": train_acc})
-        print(f"Epoch {epoch + 1}/{args.epochs}  loss={avg_loss:.4f}  train_acc={train_acc:.2f}%")
+        print(f"Epoch {epoch + 1}/{epochs}  loss={avg_loss:.4f}  train_acc={train_acc:.2f}%")
 
     ckpt_path = os.path.join(args.output_dir, "final.pt")
-    torch.save({"model": model.state_dict(), "config": config}, ckpt_path)
+    config_to_save = {**config, "model_type": args.model_type}
+    torch.save({"model": model.state_dict(), "config": config_to_save}, ckpt_path)
     print(f"Saved: {ckpt_path}")
 
     log_path = os.path.join(args.output_dir, "train_log.json")
-    log_data = {"device": str(device), "epochs": args.epochs, "history": train_log}
+    log_data = {"device": str(device), "model_type": args.model_type, "epochs": epochs, "history": train_log}
     with open(log_path, "w") as f:
         json.dump(log_data, f, indent=2)
     print(f"Saved: {log_path}")
