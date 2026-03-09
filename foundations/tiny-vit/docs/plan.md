@@ -13,10 +13,10 @@ Explore Vision Transformers (ViT) in two phases:
 - [x] Load pretrained ViT-B/16 from timm, replace head for 10 classes
 - [x] Eval random head: `python -m src.eval --config configs/cifar10.yaml`
 - [x] Linear probe: freeze backbone, train head only; `python -m src.train`
-- [ ] Record accuracy (run train + eval, add to README)
+- [x] Record accuracy (run train + eval, add to README)
 
 ## Phase 2: Tiny ViT from scratch
 
 - [x] Define minimal ViT (4 layers, 8 heads, patch 4, 32x32)
 - [x] Train on CIFAR-10 from random init: `python -m src.train --model-type tiny_vit`
-- [ ] Run train + eval, add metrics to README
+- [x] Run train + eval, add metrics to README

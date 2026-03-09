@@ -8,7 +8,7 @@ A living plan for ML explorations in this repo. Same pattern as tiny-clip: small
 
 | Project | Description | Status |
 |---------|-------------|--------|
-| **tiny-vit** | ViT: pretrained first, then small from scratch (CIFAR-10) | Scaffold |
+| **tiny-vit** | ViT: pretrained first, then tiny from scratch (CIFAR-10) | Done |
 | **SwinT** | Swin Transformer — hierarchical, shifted windows, efficient for high-res | Planned |
 | **ViViT** | Video Vision Transformer — factorized space-time attention | Planned |
 | **Hybrid CNN–Transformer** | CNN stem + transformer (e.g. ResNet backbone → ViT head) | Planned |

@@ -1,0 +1,6 @@
+{
+  "note": "tiny ViT from scratch",
+  "device": "cuda",
+  "top1": 68.33,
+  "top5": 97.13
+}

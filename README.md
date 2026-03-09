@@ -6,7 +6,7 @@ A playground for ML experiments and reference implementations.
 
 - **[foundations/](foundations/)** — Model architectures and small pipelines (ViT, Conformer, Perceiver, etc.).
   - **[tiny-clip](foundations/tiny-clip/)** — CLIP-style contrastive learning: modify pretrained CLIP (Track A) or build from components (Track B). Data sanity check, zero-shot eval, and retrieval on Flickr30k.
-  - **[tiny-vit](foundations/tiny-vit/)** — ViT on CIFAR-10: linear probe 94.4% top-1. [Samples](foundations/tiny-vit/results/linear_probe/samples.png) · [Metrics](foundations/tiny-vit/results/linear_probe/metrics.json)
+  - **[tiny-vit](foundations/tiny-vit/)** — ViT on CIFAR-10: linear probe (94.4% top-1) and tiny ViT from scratch (68.3% top-1).
   - **[tiny_transformer](foundations/tiny_transformer/)** — LLM representation (small transformer reference).
   - **BLIP2** (to be added) — Q-Former bridging frozen image encoder + frozen LLM.
   - **LLaVA** (to be added) — Simple projection + LLM for vision–language.
@@ -35,6 +35,18 @@ We compose a pretrained ViT + pretrained DistilBERT, add projection heads, and t
 | **B0** (random projections) | 0.1% | 0.08% | Near random |
 
 Flickr30k 1k test set. See [tiny-clip](foundations/tiny-clip/) for details.
+
+## Example: ViT on CIFAR-10
+
+Linear probe (pretrained ViT-B/16 + trained head) reaches 94.4% top-1; tiny ViT trained from scratch on 32×32 reaches 68.3%. Pretrained features dominate; from-scratch learns useful representations but with a smaller model and no augmentation.
+
+| Model | Top-1 | Top-5 | Notes |
+|-------|-------|-------|-------|
+| **Linear probe** | 94.4% | 99.9% | Pretrained ViT-B/16, frozen backbone |
+| **Tiny ViT** | 68.3% | 97.1% | 4 layers, 8 heads, trained from scratch |
+| **Random head** | ~10% | ~40% | Baseline |
+
+See [tiny-vit](foundations/tiny-vit/) for setup and commands.
 
 ## Quick links
 
