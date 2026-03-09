@@ -10,6 +10,7 @@ A playground for ML experiments and reference implementations.
   - **[tiny_transformer](foundations/tiny_transformer/)** — LLM representation (small transformer reference).
   - **BLIP2** (to be added) — Q-Former bridging frozen image encoder + frozen LLM.
   - **[tiny-llava](foundations/tiny-llava/)** — LLaVA-style VLM: frozen CLIP + projection + LLM. (Scaffold)
+  - **[tiny-flamingo](foundations/tiny-flamingo/)** — Flamingo-style: ViT + Perceiver Resampler + GPT-2. 12GB VRAM. (Scaffold)
   - **SwinT, ViViT, Perceiver, Conformer, S4/Mamba** (to be added) — Vision, video, and SSM architectures.
   - **VLA** (to be added) — Vision–language–action for robotics.
 - **[timeseries/](timeseries/)** — Time-series tools and notebooks (e.g. HFA envelope methods, ECoG).
@@ -50,5 +51,5 @@ See [tiny-vit](foundations/tiny-vit/) for setup and commands.
 
 ## Quick links
 
-- [Tiny-CLIP](foundations/tiny-clip/) · [Tiny-ViT](foundations/tiny-vit/) · [tiny-llava](foundations/tiny-llava/)
+- [Tiny-CLIP](foundations/tiny-clip/) · [Tiny-ViT](foundations/tiny-vit/) · [tiny-llava](foundations/tiny-llava/) · [tiny-flamingo](foundations/tiny-flamingo/)
 - [Repo roadmap](docs/plan.md)

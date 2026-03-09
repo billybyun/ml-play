@@ -1,0 +1,22 @@
+# tiny-flamingo config (12GB VRAM)
+vision_model: google/vit-base-patch16-224
+llm_model: gpt2
+image_size: 224
+
+# Perceiver Resampler
+num_latents: 32
+d_latent: 768
+resampler_depth: 2
+resampler_heads: 8
+
+# Data
+dataset_name: nlpconnect/vit-gpt2-image-captioning
+batch_size: 4
+max_length: 128
+
+# Training
+epochs: 3
+lr: 0.0001
+use_amp: true
+gradient_checkpointing: false
+output_dir: checkpoints/flamingo
