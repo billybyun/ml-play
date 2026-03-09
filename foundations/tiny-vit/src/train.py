@@ -1,4 +1,4 @@
-"""Training loop for tiny-vit: linear probe or small ViT from scratch."""
+"""Training loop for tiny-vit: linear probe or tiny ViT from scratch."""
 import argparse
 import json
 import os
@@ -14,23 +14,23 @@ import torch
 import torch.nn.functional as F
 
 from src.data import get_dataloader
-from src.models import create_vit, create_small_vit, freeze_backbone_for_linear_probe
+from src.models import create_vit, create_tiny_vit, freeze_backbone_for_linear_probe
 from src.utils import load_config
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train ViT: linear probe or small ViT from scratch.")
-    parser.add_argument("--model-type", choices=["linear_probe", "small_vit"], default="linear_probe")
-    parser.add_argument("--config", default=None, help="Config path (default: cifar10.yaml or small_vit.yaml)")
+    parser = argparse.ArgumentParser(description="Train ViT: linear probe or tiny ViT from scratch.")
+    parser.add_argument("--model-type", choices=["linear_probe", "tiny_vit"], default="linear_probe")
+    parser.add_argument("--config", default=None, help="Config path (default: cifar10.yaml or tiny_vit.yaml)")
     parser.add_argument("--epochs", type=int, default=None, help="Override epochs from config")
     parser.add_argument("--lr", type=float, default=None, help="Override learning rate from config")
     parser.add_argument("--output-dir", default=None, help="Checkpoint directory")
     args = parser.parse_args()
 
     if args.config is None:
-        args.config = "configs/small_vit.yaml" if args.model_type == "small_vit" else "configs/cifar10.yaml"
+        args.config = "configs/tiny_vit.yaml" if args.model_type == "tiny_vit" else "configs/cifar10.yaml"
     if args.output_dir is None:
-        args.output_dir = "checkpoints/small_vit" if args.model_type == "small_vit" else "checkpoints/linear_probe"
+        args.output_dir = "checkpoints/tiny_vit" if args.model_type == "tiny_vit" else "checkpoints/linear_probe"
 
     config = load_config(args.config)
     epochs = args.epochs if args.epochs is not None else config.get("epochs", 10)
@@ -41,14 +41,14 @@ def main():
     print(f"Model type: {args.model_type}")
 
     torch.manual_seed(42)
-    if args.model_type == "small_vit":
-        model = create_small_vit(config).to(device)
+    if args.model_type == "tiny_vit":
+        model = create_tiny_vit(config).to(device)
     else:
         model = create_vit(config).to(device)
         freeze_backbone_for_linear_probe(model)
 
     train_loader = get_dataloader(config, split="train")
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     os.makedirs(args.output_dir, exist_ok=True)
     train_log = []

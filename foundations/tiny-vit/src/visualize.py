@@ -12,7 +12,7 @@ import torch
 import matplotlib.pyplot as plt
 
 from src.data import get_dataloader, IMAGENET_MEAN, IMAGENET_STD, CIFAR10_MEAN, CIFAR10_STD
-from src.models import create_vit, create_small_vit
+from src.models import create_vit, create_tiny_vit
 from src.utils import load_config
 
 CIFAR10_CLASSES = [
@@ -41,10 +41,10 @@ def main():
     ckpt = torch.load(args.checkpoint, map_location=device)
     config = ckpt.get("config") or load_config(args.config or "configs/cifar10.yaml")
 
-    if config.get("model_type") == "small_vit" or "patch_size" in config or "embed_dim" in config:
-        model = create_small_vit(config).to(device)
+    if config.get("model_type") in ("tiny_vit", "small_vit") or "patch_size" in config or "embed_dim" in config:
+        model = create_tiny_vit(config).to(device)
         mean, std = CIFAR10_MEAN, CIFAR10_STD
-        title = "Small ViT from scratch"
+        title = "Tiny ViT from scratch"
     else:
         model = create_vit(config).to(device)
         mean, std = IMAGENET_MEAN, IMAGENET_STD
@@ -53,7 +53,7 @@ def main():
     model.eval()
 
     if args.output is None:
-        args.output = "results/small_vit/samples.png" if (config.get("model_type") == "small_vit" or "patch_size" in config) else "results/linear_probe/samples.png"
+        args.output = "results/tiny_vit/samples.png" if (config.get("model_type") in ("tiny_vit", "small_vit") or "patch_size" in config) else "results/linear_probe/samples.png"
 
     dataloader = get_dataloader(config, split="test")
     images, labels = next(iter(dataloader))

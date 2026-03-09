@@ -1,10 +1,10 @@
-"""Models for tiny-vit: pretrained ViT (timm), small ViT from scratch."""
+"""Models for tiny-vit: pretrained ViT (timm), tiny ViT from scratch."""
 import timm
 import torch
 import torch.nn as nn
 
 
-class SmallViT(nn.Module):
+class TinyViT(nn.Module):
     """Minimal ViT for CIFAR-10 (32x32), trained from scratch."""
     def __init__(
         self,
@@ -79,9 +79,9 @@ def freeze_backbone_for_linear_probe(model: nn.Module) -> None:
             param.requires_grad = False
 
 
-def create_small_vit(config: dict) -> nn.Module:
-    """Create small ViT from config (for training from scratch on CIFAR-10)."""
-    return SmallViT(
+def create_tiny_vit(config: dict) -> nn.Module:
+    """Create tiny ViT from config (for training from scratch on CIFAR-10)."""
+    return TinyViT(
         img_size=config.get("image_size", 32),
         patch_size=config.get("patch_size", 4),
         num_classes=config.get("num_classes", 10),

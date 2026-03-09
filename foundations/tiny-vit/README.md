@@ -1,6 +1,6 @@
 # tiny-vit
 
-ViT on CIFAR-10: pretrained + linear probe, and small ViT from scratch. See [results](results/).
+ViT on CIFAR-10: pretrained + linear probe, and tiny ViT from scratch. See [results](results/).
 
 ## Results
 
@@ -8,10 +8,10 @@ ViT on CIFAR-10: pretrained + linear probe, and small ViT from scratch. See [res
 |-------|-------|-------|
 | Random head | ~10% | ~40% |
 | Linear probe | 94.4% | 99.9% |
-| Small ViT (from scratch) | — | — |
+| Tiny ViT (from scratch) | — | — |
 
 - Linear probe: [Samples](results/linear_probe/samples.png) · [Metrics](results/linear_probe/metrics.json)
-- Small ViT: [Samples](results/small_vit/samples.png) · [Metrics](results/small_vit/metrics.json)
+- Tiny ViT: [Samples](results/tiny_vit/samples.png) · [Metrics](results/tiny_vit/metrics.json)
 
 ## Commands
 
@@ -23,13 +23,13 @@ python -m src.train --model-type linear_probe
 python -m src.eval --checkpoint checkpoints/linear_probe/final.pt --output results/linear_probe/metrics.json
 python -m src.visualize --checkpoint checkpoints/linear_probe/final.pt
 
-# Small ViT from scratch
-python -m src.train --model-type small_vit
-python -m src.eval --checkpoint checkpoints/small_vit/final.pt --output results/small_vit/metrics.json
-python -m src.visualize --checkpoint checkpoints/small_vit/final.pt
+# Tiny ViT from scratch
+python -m src.train --model-type tiny_vit
+python -m src.eval --checkpoint checkpoints/tiny_vit/final.pt --output results/tiny_vit/metrics.json
+python -m src.visualize --checkpoint checkpoints/tiny_vit/final.pt
 ```
 
 ## Status
 
 - [x] Linear probe (pretrained ViT + trained head)
-- [x] Small ViT from scratch
+- [x] Tiny ViT from scratch

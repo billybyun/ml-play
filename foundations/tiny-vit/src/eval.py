@@ -12,7 +12,7 @@ os.chdir(ROOT)
 import torch
 
 from src.data import get_dataloader
-from src.models import create_vit, create_small_vit
+from src.models import create_vit, create_tiny_vit
 from src.utils import load_config
 
 
@@ -52,9 +52,10 @@ def main():
     if args.checkpoint:
         ckpt = torch.load(args.checkpoint, map_location=device)
         config = ckpt.get("config") or load_config(args.config or "configs/cifar10.yaml")
-        model_type = config.get("model_type") or ("small_vit" if ("patch_size" in config or "embed_dim" in config) else "timm")
-        if model_type == "small_vit":
-            model = create_small_vit(config).to(device)
+        model_type = config.get("model_type") or ("tiny_vit" if ("patch_size" in config or "embed_dim" in config) else "timm")
+        # Support legacy small_vit checkpoints
+        if model_type in ("tiny_vit", "small_vit"):
+            model = create_tiny_vit(config).to(device)
         else:
             model = create_vit(config).to(device)
         model.load_state_dict(ckpt.get("model", ckpt), strict=False)
@@ -88,8 +89,8 @@ def main():
         import json
         if not args.checkpoint:
             note = "random head, no training"
-        elif config.get("model_type") == "small_vit":
-            note = "small ViT from scratch"
+        elif config.get("model_type") in ("tiny_vit", "small_vit"):
+            note = "tiny ViT from scratch"
         else:
             note = "linear probe (trained head)"
         result = {"note": note, "device": str(device), "top1": acc[1], "top5": acc[5]}
