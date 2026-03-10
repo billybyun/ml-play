@@ -13,6 +13,7 @@ Flamingo-style VLM: frozen ViT + Perceiver Resampler + frozen GPT-2. Designed fo
 ## Status
 
 - [x] Phase 1: Scaffold & inference (model + inference implemented)
+- [x] Phase 2: Data & training (data.py, train.py implemented)
 - [ ] Phase 2: Data & training
 - [ ] Phase 3: Cross-attention in LM (optional)
 
@@ -22,10 +23,13 @@ Flamingo-style VLM: frozen ViT + Perceiver Resampler + frozen GPT-2. Designed fo
 pip install -r requirements.txt
 ```
 
-## Commands (planned)
+## Commands
 
 ```bash
+# Inference
 python -m src.inference --image path/to/image.jpg --prompt "Describe this image."
+
+# Training (downloads flickr30k on first run)
 python -m src.train --config configs/flamingo.yaml
 ```
 

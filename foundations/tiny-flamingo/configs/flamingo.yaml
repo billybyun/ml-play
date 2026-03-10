@@ -9,8 +9,9 @@ d_latent: 768
 resampler_depth: 2
 resampler_heads: 8
 
-# Data
-dataset_name: nlpconnect/vit-gpt2-image-captioning
+# Data (nlphuji/flickr30k parquet; filter by internal split column for train)
+dataset_name: nlphuji/flickr30k
+revision: refs/convert/parquet
 batch_size: 4
 max_length: 128
 
