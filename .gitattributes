@@ -1,0 +1,15 @@
+* text=auto eol=lf
+
+# Binaries — do not apply line-ending normalization
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.pt binary
+*.pth binary
+*.bin binary
+*.onnx binary
+*.npz binary
